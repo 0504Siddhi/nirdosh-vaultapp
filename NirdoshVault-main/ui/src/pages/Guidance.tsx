@@ -81,7 +81,7 @@ export default function Guidance() {
     };
   };
 
-  const conflicts = analysis?.fieldResults?.filter((f: any) => f.status === 'conflicting_evidence' || f.status === 'outlier_detected' || f.status === 'possible_variant') || [];
+  const conflicts = analysis?.fieldResults?.filter((f: any) => f.needsManualVerification === true) || [];
 
   return (
     <div className="pt-24 px-6 max-w-4xl mx-auto min-h-screen relative z-10 pb-20">
@@ -189,4 +189,5 @@ export default function Guidance() {
     </div>
   );
 }
+
 
