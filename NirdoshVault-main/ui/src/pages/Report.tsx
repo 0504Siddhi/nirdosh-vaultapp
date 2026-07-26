@@ -156,7 +156,7 @@ export default function Report() {
 
 function ConsensusProfile({ fieldResults, documentCount }: { fieldResults: any[]; documentCount: number }) {
   const included = fieldResults.filter((r: any) => r.status === 'consistent' || r.status === 'outlier_detected' || r.status === 'possible_variant');
-  const conflicts = fieldResults.filter((r: any) => r.needsManualVerification === true).length;
+  const conflicts = fieldResults.filter((r: any) => r.status === 'conflicting_evidence' || r.status === 'incomplete_date_conflict').length;
   
   return (
     <div className="space-y-6">

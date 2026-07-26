@@ -81,7 +81,7 @@ export default function Guidance() {
     };
   };
 
-  const conflicts = analysis?.fieldResults?.filter((f: any) => f.needsManualVerification === true) || [];
+  const conflicts = analysis?.fieldComparisons?.filter((f: any) => f.status === 'conflict' || f.status === 'outlier') || [];
 
   return (
     <div className="pt-24 px-6 max-w-4xl mx-auto min-h-screen relative z-10 pb-20">
@@ -189,5 +189,3 @@ export default function Guidance() {
     </div>
   );
 }
-
-

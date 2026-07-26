@@ -29,8 +29,7 @@ function confidence(status: FieldStatus, support: number, total: number): Confid
 }
 
 function validField(field: any): boolean {
-  // Relaxed condition so live-extracted fields aren't silently dropped if pre-normalization metadata is missing
-  return Boolean(field?.value && !field.invalidReason);
+  return Boolean(field?.value && field.normalized && !field.invalidReason && (field.confidence ?? 0) >= 0.6);
 }
 
 export interface AuditReportResponse {
