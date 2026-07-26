@@ -2,8 +2,8 @@ services:
   - type: web
     name: nirdosh-vault-api
     runtime: docker
-    dockerfilePath: ./api/Dockerfile
-    dockerContext: ./api
+    dockerfilePath: ./NirdoshVault-main/api/Dockerfile
+    dockerContext: ./NirdoshVault-main/api
     plan: free
     healthCheckPath: /health
     envVars:
