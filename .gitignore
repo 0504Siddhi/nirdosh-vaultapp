@@ -147,3 +147,5 @@ api/uploads/
 
 # Server log files
 api/logs/
+.vercel
+.env*
