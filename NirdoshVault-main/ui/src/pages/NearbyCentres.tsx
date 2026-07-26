@@ -1,17 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../api/client';
 import {
   MapPin, Navigation, Search, Loader2, ExternalLink,
-  Building2, CreditCard, Scale, Landmark, ChevronDown, X
+  Building2, CreditCard, Scale, Landmark, ChevronDown
 } from 'lucide-react';
 import GoogleMapView from '../components/GoogleMapView';
 
-interface PlaceSuggestion {
-  placeId: string;
-  mainText: string;
-  secondaryText: string;
-}
 
 interface Centre {
   id: string;
@@ -45,12 +40,6 @@ export default function NearbyCentres() {
   const [selectedCentreId, setSelectedCentreId] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>({ lat: 18.5314, lng: 73.8446 });
 
-  const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<PlaceSuggestion[]>([]);
-  const [suggestOpen, setSuggestOpen] = useState(false);
-  const [suggestLoading, setSuggestLoading] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const searchBoxRef = useRef<HTMLDivElement>(null);
 
   // Load available cities and default Pune centres on mount so screen is never empty
   useEffect(() => {
@@ -318,3 +307,5 @@ export default function NearbyCentres() {
     </div>
   );
 }
+
+

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
 import api from '../api/client';
-import { FileText, CheckCircle, AlertTriangle, ChevronRight, Activity, ShieldCheck, Lock, Trash2 } from 'lucide-react';
+import { FileText, CheckCircle, AlertTriangle, ChevronRight, Activity, ShieldCheck } from 'lucide-react';
 import EmptyState from '../components/EmptyState';
 
 export default function Dashboard() {
