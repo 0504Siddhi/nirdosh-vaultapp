@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "documents": {
+    "aadhaar": { "supported_fields": ["full_name", "date_of_birth", "year_of_birth", "gender", "address", "aadhaar_number"], "comparison_fields": ["full_name", "date_of_birth", "year_of_birth", "gender", "address"], "sensitive_fields": ["aadhaar_number"] },
+    "pan": { "supported_fields": ["full_name", "father_name", "date_of_birth", "pan_number"], "comparison_fields": ["full_name", "father_name", "date_of_birth"], "sensitive_fields": ["pan_number"] },
+    "birth_certificate": { "supported_fields": ["full_name", "date_of_birth", "place_of_birth", "father_name", "mother_name", "registration_number"], "comparison_fields": ["full_name", "date_of_birth", "place_of_birth", "father_name", "mother_name"], "sensitive_fields": ["registration_number"] },
+    "school_leaving_certificate": { "supported_fields": ["full_name", "date_of_birth", "place_of_birth", "father_name", "mother_name", "school_name"], "comparison_fields": ["full_name", "date_of_birth", "place_of_birth", "father_name", "mother_name"], "sensitive_fields": [] },
+    "marksheet": { "supported_fields": ["full_name", "mother_name", "seat_number", "school_name", "examination_year"], "comparison_fields": ["full_name", "mother_name"], "sensitive_fields": ["seat_number"] }
+  }
+}

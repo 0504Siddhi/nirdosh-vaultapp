@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nirdosh Vault — AI-powered Document Consistency Engine</title>
+  <meta name="description" content="Nirdosh Vault helps Indian citizens detect document inconsistencies before government application rejections using an AI-powered Consensus Identity Engine." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy-950:#0f172a;--navy-900:#1e293b;--navy-700:#334155;--navy-600:#475569;
+      --saffron-400:#fbbf24;--saffron-500:#e4a142;--saffron-600:#d29135;
+      --green-400:#34d399;--green-500:#10b981;--green-600:#059669;
+      --amber-400:#fbbf24;--red-400:#f87171;--red-500:#ef4444;
+      --blue-400:#60a5fa;--purple-400:#c084fc;--purple-500:#a855f7;
+      --glass:#ffffff;--glass-border:#e2e8f0;--glass-hover:#f8fafc;
+      --bg-color:#f6f5f0;
+      --text-primary:#0f172a;--text-secondary:#475569;--text-muted:#64748b;
+      --radius-sm:8px;--radius-md:12px;--radius-lg:16px;
+      --shadow-card:0 4px 20px rgba(0,0,0,.05);
+      --transition:all .25s cubic-bezier(.4,0,.2,1);
+    }
+    *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-color);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background-size:40px 40px;background-image:linear-gradient(to right,rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(to bottom,rgba(0,0,0,.04) 1px,transparent 1px);pointer-events:none;z-index:0}
+    #app{position:relative;z-index:1}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#f1f5f9}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+    h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.1;letter-spacing:-0.02em;}
+    h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:700;line-height:1.2}
+    h3{font-size:1.1rem;font-weight:600}p{line-height:1.7}
+    .card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);transition:var(--transition)}
+    .card:hover{border-color:#cbd5e1;background:#ffffff;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius-md);font-size:.875rem;font-weight:600;cursor:pointer;border:none;transition:var(--transition);text-decoration:none;font-family:inherit}
+    .btn-primary{background:var(--saffron-500);color:#fff;box-shadow:0 2px 10px rgba(228,161,66,.3)}
+    .btn-primary:hover{transform:translateY(-1px);background:var(--saffron-600);box-shadow:0 4px 15px rgba(228,161,66,.4)}
+    .btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+    .btn-secondary{background:#ffffff;border:1px solid var(--glass-border);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+    .btn-secondary:hover{background:#f8fafc;border-color:#cbd5e1}
+    .btn-success{background:var(--green-500);color:#fff;box-shadow:0 2px 10px rgba(16,185,129,.3)}
+    .btn-sm{padding:7px 14px;font-size:.8rem;border-radius:var(--radius-sm)}
+    .btn-lg{padding:14px 28px;font-size:1rem}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:.7rem;font-weight:600}
+    .badge-high{background:#ecfdf5;color:var(--green-600);border:1px solid #d1fae5}
+    .badge-medium{background:#fffbeb;color:var(--saffron-600);border:1px solid #fef3c7}
+    .badge-limited{background:#fff7ed;color:var(--saffron-600);border:1px solid #ffedd5}
+    .badge-insufficient{background:#fef2f2;color:var(--red-500);border:1px solid #fee2e2}
+    .badge-consensus{background:#ecfdf5;color:var(--green-600);border:1px solid #d1fae5}
+    .badge-outlier{background:#fff7ed;color:var(--saffron-600);border:1px solid #ffedd5}
+    .badge-conflict{background:#fef2f2;color:var(--red-500);border:1px solid #fee2e2}
+    .badge-info{background:#eff6ff;color:var(--navy-600);border:1px solid #dbeafe}
+    .input{width:100%;padding:10px 14px;border-radius:var(--radius-sm);background:#ffffff;border:1px solid var(--glass-border);color:var(--text-primary);font-family:inherit;font-size:.9rem;transition:var(--transition);outline:none}
+    .input:focus{border-color:var(--saffron-500);box-shadow:0 0 0 3px rgba(228,161,66,.15)}
+    .input::placeholder{color:var(--text-muted)}
+    label{font-size:.82rem;font-weight:500;color:var(--text-secondary);margin-bottom:6px;display:block}
+    #navbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(246,245,240,.9);border-bottom:1px solid var(--glass-border);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+    .nav-logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.1rem;cursor:pointer;color:var(--navy-950)}
+    .nav-logo .logo-icon{width:34px;height:34px;border-radius:var(--radius-sm);background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem}
+    .nav-links{display:flex;align-items:center;gap:4px}
+    .nav-link{padding:7px 13px;border-radius:var(--radius-sm);color:var(--text-secondary);font-size:.85rem;font-weight:500;cursor:pointer;transition:var(--transition);background:transparent;border:none;font-family:inherit}
+    .nav-link:hover,.nav-link.active{color:var(--text-primary);background:#f1f5f9}
+    .nav-user{display:flex;align-items:center;gap:12px}
+    .nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--navy-900);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;cursor:pointer}
+    .lang-selector{padding:6px 10px;border-radius:var(--radius-sm);background:#ffffff;border:1px solid var(--glass-border);color:var(--text-secondary);font-size:.78rem;font-family:inherit;cursor:pointer}
+    .page{display:none;min-height:100vh;padding-top:64px}
+    .page.active{display:block;animation:fadeIn .35s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    .page-inner{max-width:1100px;margin:0 auto;padding:40px 24px}
+    .page-inner-sm{max-width:480px;margin:0 auto;padding:40px 24px}
+    .page-inner-md{max-width:760px;margin:0 auto;padding:40px 24px}
+    .section-header{margin-bottom:32px}
+    .section-header h2{margin-bottom:8px;color:var(--navy-950)}
+    .section-header p{color:var(--text-secondary);max-width:600px}
+    .section-tag{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--saffron-500);margin-bottom:10px}
+    .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+    .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+    .stat-card{padding:24px}
+    .stat-value{font-size:2.2rem;font-weight:800;line-height:1;margin:8px 0 4px}
+    .stat-label{font-size:.82rem;color:var(--text-secondary)}
+    .stat-icon{width:40px;height:40px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:8px}
+    .upload-zone{border:2px dashed var(--glass-border);border-radius:var(--radius-lg);padding:48px 24px;text-align:center;cursor:pointer;transition:var(--transition);background:#ffffff}
+    .upload-zone:hover,.upload-zone.drag-over{border-color:var(--saffron-500);background:#fffbeb}
+    .upload-icon{font-size:2.5rem;margin-bottom:12px}
+    .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:16px;margin-top:24px}
+    .doc-card{padding:20px;position:relative;cursor:pointer;border-radius:var(--radius-md);background:#ffffff;border:1px solid var(--glass-border);transition:var(--transition)}
+    .doc-card:hover{border-color:#cbd5e1;transform:translateY(-2px);box-shadow:var(--shadow-card)}
+    .doc-card.loaded{border-color:var(--green-400);box-shadow:0 0 0 1px var(--green-400)}
+    .doc-type-icon{font-size:1.8rem;margin-bottom:10px}
+    .doc-name{font-size:.85rem;font-weight:600;margin-bottom:4px;color:var(--navy-950)}
+    .doc-status{font-size:.75rem;color:var(--text-muted)}
+    .doc-status.ok{color:var(--green-600)}
+    .doc-badge{position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:50%}
+    .doc-badge.green{background:var(--green-500);box-shadow:0 0 4px var(--green-400)}
+    .doc-badge.red{background:var(--red-500);box-shadow:0 0 4px var(--red-400)}
+    .field-row{padding:20px;border-radius:var(--radius-md);background:#ffffff;border:1px solid var(--glass-border);margin-bottom:12px;transition:var(--transition);box-shadow:0 2px 8px rgba(0,0,0,.02)}
+    .field-row:hover{border-color:#cbd5e1;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+    .field-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+    .field-key{font-size:.75rem;font-family:'JetBrains Mono',monospace;color:var(--text-muted)}
+    .field-value-row{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+    .field-doc-chip{padding:4px 10px;border-radius:999px;font-size:.7rem;font-weight:500;background:#f1f5f9;border:1px solid var(--glass-border);color:var(--text-secondary)}
+    .field-doc-chip.supporting{background:#ecfdf5;border-color:#d1fae5;color:var(--green-600)}
+    .field-doc-chip.outlier{background:#fffbeb;border-color:#fef3c7;color:var(--saffron-600)}
+    .field-doc-chip.conflict{background:#fef2f2;border-color:#fee2e2;color:var(--red-600)}
+    .consensus-value{font-weight:700;font-size:1rem;margin:6px 0;color:var(--navy-950)}
+    .conflict-groups{display:flex;gap:14px;flex-wrap:wrap}
+    .conflict-group{flex:1;min-width:150px;padding:12px;border-radius:var(--radius-sm)}
+    .conflict-group-a{background:#eff6ff;border:1px solid #dbeafe}
+    .conflict-group-b{background:#faf5ff;border:1px solid #f3e8ff}
+    .conflict-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+    .conflict-label.a{color:var(--blue-500)}.conflict-label.b{color:var(--purple-500)}
+    .kit-card{padding:24px;margin-bottom:16px;border-radius:var(--radius-lg);background:#ffffff;border:1px solid var(--glass-border)}
+    .kit-card.outlier-card{border-left:3px solid var(--saffron-500)}
+    .kit-card.conflict-card{border-left:3px solid var(--red-500)}
+    .kit-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+    .kit-explanation{padding:16px;border-radius:var(--radius-sm);background:#f8fafc;border:1px solid var(--glass-border);font-size:.875rem;line-height:1.7;margin-bottom:14px}
+    .kit-steps{list-style:none}
+    .kit-steps li{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--glass-border);font-size:.875rem;line-height:1.6}
+    .kit-steps li:last-child{border-bottom:none}
+    .step-num{min-width:24px;height:24px;border-radius:50%;background:var(--saffron-500);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px}
+    .kit-disclaimer{margin-top:14px;padding:12px 16px;border-radius:var(--radius-sm);background:#fef2f2;border:1px solid #fee2e2;font-size:.78rem;color:var(--red-600);display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+    .rule-citation{margin-top:10px;padding:10px 14px;border-radius:var(--radius-sm);background:#eff6ff;border:1px solid #dbeafe;font-size:.78rem;color:var(--navy-600);display:flex;align-items:center;gap:8px}
+    .rule-citation a{color:var(--blue-500);text-decoration:underline}
+    .audit-row{display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid var(--glass-border);font-size:.85rem}
+    .audit-icon{width:32px;height:32px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem}
+    .audit-event{font-weight:600;margin-bottom:3px}
+    .audit-meta{font-size:.75rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace;word-break:break-all}
+    .audit-time{font-size:.72rem;color:var(--text-muted);white-space:nowrap;margin-left:auto}
+    .tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--glass-border)}
+    .tab-btn{padding:10px 18px;font-size:.85rem;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text-muted);font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-1px;transition:var(--transition)}
+    .tab-btn:hover{color:var(--navy-950)}.tab-btn.active{color:var(--saffron-500);border-bottom-color:var(--saffron-500)}
+    .alert{padding:14px 18px;border-radius:var(--radius-sm);font-size:.875rem;line-height:1.6;margin-bottom:16px;display:flex;gap:10px}
+    .alert-info{background:#eff6ff;border:1px solid #dbeafe;color:var(--navy-700)}
+    .alert-warning{background:#fffbeb;border:1px solid #fef3c7;color:var(--saffron-700)}
+    .alert-success{background:#ecfdf5;border:1px solid #d1fae5;color:var(--green-700)}
+    .alert-danger{background:#fef2f2;border:1px solid #fee2e2;color:var(--red-700)}
+    .spinner{width:40px;height:40px;border:3px solid var(--glass-border);border-top-color:var(--saffron-500);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-overlay{position:fixed;inset:0;z-index:200;background:rgba(246,245,240,.9);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+    .loading-text{font-size:.9rem;color:var(--text-secondary);text-align:center;max-width:300px;line-height:1.7}
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 40px}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;font-size:.8rem;font-weight:700;color:var(--saffron-600);margin-bottom:24px;letter-spacing:.15em;text-transform:uppercase;}
+    .hero h1{max-width:760px;margin-bottom:20px;color:var(--navy-950)}
+    .hero h1 span{color:var(--navy-950)}
+    @keyframes shimmer{to{background-position:200%}}
+    .hero-sub{font-size:1.05rem;color:var(--text-secondary);max-width:580px;margin-bottom:36px}
+    .hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+    .hero-badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:48px}
+    .hero-badge{padding:8px 14px;border-radius:var(--radius-sm);background:#ffffff;border:1px solid var(--glass-border);font-size:.78rem;color:var(--text-secondary);display:flex;align-items:center;gap:6px}
+    .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:700px;width:100%;margin-top:64px}
+    .hero-stat{text-align:center;padding:24px;background:#ffffff}
+    .hero-stat-val{font-size:2rem;font-weight:800}
+    .hero-stat-val.saffron{color:var(--saffron-500)}.hero-stat-val.green{color:var(--green-500)}.hero-stat-val.blue{color:var(--navy-700)}
+    .hero-stat-lbl{font-size:.78rem;color:var(--text-muted);margin-top:4px}
+    .auth-card{padding:40px;background:#ffffff}
+    .auth-tabs{display:flex;background:#f1f5f9;border-radius:var(--radius-sm);padding:4px;margin-bottom:28px}
+    .auth-tab{flex:1;padding:8px;border-radius:6px;text-align:center;font-size:.85rem;font-weight:500;cursor:pointer;transition:var(--transition);color:var(--text-muted);border:none;background:transparent;font-family:inherit}
+    .auth-tab.active{background:#ffffff;color:var(--navy-950);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+    .form-group{margin-bottom:18px}
+    .auth-divider{text-align:center;color:var(--text-muted);font-size:.8rem;margin:20px 0;position:relative}
+    .auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--glass-border)}
+    .auth-divider::before{left:0}.auth-divider::after{right:0}
+    .lang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+    .lang-card{padding:28px 20px;text-align:center;cursor:pointer;border-radius:var(--radius-lg);background:#ffffff;border:2px solid var(--glass-border);transition:var(--transition)}
+    .lang-card:hover{border-color:#cbd5e1;transform:translateY(-3px)}
+    .lang-card.selected{border-color:var(--saffron-500);box-shadow:0 4px 15px rgba(228,161,66,.15)}
+    .lang-flag{font-size:2.5rem;margin-bottom:10px}
+    .lang-name{font-weight:700;font-size:1.05rem;margin-bottom:4px;color:var(--navy-950)}
+    .lang-native{font-size:1.1rem;color:var(--text-secondary)}
+    .dash-welcome{margin-bottom:32px}
+    .progress-steps{display:flex;align-items:center;margin-bottom:36px;overflow-x:auto;padding-bottom:4px}
+    .progress-step{display:flex;flex-direction:column;align-items:center;position:relative;min-width:110px}
+    .progress-step::before{content:'';position:absolute;top:16px;left:calc(50% + 16px);right:calc(-50% + 16px);height:2px;background:var(--glass-border);z-index:0}
+    .progress-step:last-child::before{display:none}
+    .step-circle{width:32px;height:32px;border-radius:50%;border:2px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;position:relative;z-index:1;margin-bottom:8px;background:#ffffff;color:var(--text-muted);transition:var(--transition)}
+    .step-circle.done{background:var(--green-500);border-color:var(--green-500);color:#fff}
+    .step-circle.active{background:var(--saffron-500);border-color:var(--saffron-500);color:#fff;box-shadow:0 0 12px rgba(228,161,66,.3)}
+    .step-label{font-size:.7rem;color:var(--text-muted);text-align:center}
+    .divider{height:1px;background:var(--glass-border);margin:24px 0}
+    .text-saffron{color:var(--saffron-600)}.text-green{color:var(--green-600)}.text-muted{color:var(--text-muted)}.text-secondary{color:var(--text-secondary)}
+    .text-sm{font-size:.85rem}.text-xs{font-size:.75rem}
+    .mb-1{margin-bottom:4px}.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}.mb-6{margin-bottom:24px}
+    .mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}
+    .font-bold{font-weight:700}.font-semibold{font-weight:600}
+    .dot-pulse{display:inline-flex;align-items:center;gap:4px}
+    .dot{width:6px;height:6px;border-radius:50%;background:var(--green-500);animation:dp 1.5s infinite}
+    .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+    @keyframes dp{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+    @media(max-width:640px){.nav-links{display:none}.hero-stats{grid-template-columns:1fr}.hero-cta{flex-direction:column;align-items:center}.page-inner{padding:24px 16px}.conflict-groups{flex-direction:column}.field-header{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+<div id="app">
+
+<!-- NAVBAR -->
+<nav id="navbar" style="display:none;">
+  <div class="nav-logo" onclick="navigate('dashboard')">
+    <div class="logo-icon">&#127759;</div><span>Nirdosh Vault</span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="navigate('dashboard')" id="nav-dashboard">Dashboard</button>
+    <button class="nav-link" onclick="navigate('upload')" id="nav-upload">Upload Docs</button>
+    <button class="nav-link" onclick="navigate('report')" id="nav-report">Report</button>
+    <button class="nav-link" onclick="navigate('guidance')" id="nav-guidance">Correction Kit</button>
+    <button class="nav-link" onclick="navigate('audit')" id="nav-audit">Audit Log</button>
+  </div>
+  <div class="nav-user">
+    <select class="lang-selector" onchange="setLanguage(this.value)" id="lang-select">
+      <option value="en">EN</option>
+      <option value="hi">HI</option>
+      <option value="mr">MR</option>
+    </select>
+    <div class="nav-avatar" id="nav-avatar" onclick="logout()" title="Sign out">S</div>
+  </div>
+</nav>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loading" style="display:none;">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Processing your documents...</div>
+</div>
+
+<!-- ======================== PAGE: LANDING ======================== -->
+<div class="page active" id="page-landing" style="padding-top:0;">
+  <div class="hero">
+    <div class="hero-eyebrow" style="background:transparent; border:none; letter-spacing:0.15em; font-size:0.7rem; color:var(--saffron-600); font-weight:700; text-transform:uppercase; padding:0;">PRE-SUBMISSION DOCUMENT CHECK</div>
+    <h1>Check whether your<br/>documents agree<br/>before you apply.</h1>
+    <p class="hero-sub">Find conflicting names, dates and identity details across your<br/>documents before submitting an application.</p>
+    <div class="hero-cta" style="justify-content: flex-start; text-align: left;">
+      <button class="btn btn-primary btn-lg" id="cta-getstarted" onclick="navigate('auth')">Check My Documents &rarr;</button>
+      <button class="btn btn-secondary btn-lg" id="cta-demo" onclick="showDemoAlert()">&#9729; Try Sample Documents</button>
+    </div>
+    <div style="margin-top: 16px; font-size: 0.75rem; color: var(--text-muted); text-align: left; display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 1rem;">&#128373;</span> Session-based prototype &middot; You can delete your session
+    </div>
+    <div class="hero-badges">
+      <div class="hero-badge">&#9989; Consensus Engine &mdash; not AI guesswork</div>
+      <div class="hero-badge">&#128274; Privacy-first &middot; No permanent storage</div>
+      <div class="hero-badge">&#127963; Advisory only &middot; Issuing authority decides</div>
+      <div class="hero-badge">&#127760; English &middot; Hindi &middot; Marathi</div>
+    </div>
+    <div class="hero-stats">
+      <div class="card hero-stat">
+        <div class="hero-stat-val saffron">4&ndash;7%</div>
+        <div class="hero-stat-lbl">Welfare leakage from doc mismatches (NITI Aayog)</div>
+      </div>
+      <div class="card hero-stat">
+        <div class="hero-stat-val green">56+</div>
+        <div class="hero-stat-lbl">Ministries using DBT &mdash; all need consistent identity</div>
+      </div>
+      <div class="card hero-stat">
+        <div class="hero-stat-val blue">&#8377;500+</div>
+        <div class="hero-stat-lbl">Typical cost just to begin one document correction</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: AUTH ======================== -->
+<div class="page" id="page-auth">
+  <div class="page-inner-sm" style="padding-top:80px;">
+    <div class="card auth-card">
+      <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px;">
+        <div style="width:44px;height:44px;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--saffron-500),var(--green-500));display:flex;align-items:center;justify-content:center;font-size:1.3rem;">&#127759;</div>
+        <div><div style="font-weight:800;font-size:1.15rem;">Nirdosh Vault</div><div style="font-size:.75rem;color:var(--text-muted);">Consensus Identity Engine</div></div>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+      <div id="auth-login">
+        <div class="alert alert-info" style="margin-bottom:20px;"><span>&#8505;&#65039;</span><span>Demo: <strong>sanjay@demo.in</strong> / <strong>demo123</strong></span></div>
+        <div class="form-group"><label for="login-email">Email Address</label><input class="input" type="email" id="login-email" placeholder="your@email.com" value="sanjay@demo.in" /></div>
+        <div class="form-group"><label for="login-pass">Password</label><input class="input" type="password" id="login-pass" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" value="demo123" /></div>
+        <button class="btn btn-primary" id="btn-login" style="width:100%;justify-content:center;" onclick="doLogin()">Sign In &rarr;</button>
+        <div class="auth-divider">use synthetic documents only</div>
+        <p style="font-size:.75rem;color:var(--text-muted);text-align:center;">&#128274; Demo prototype. Do not upload real Aadhaar, PAN, or sensitive personal documents.</p>
+      </div>
+      <div id="auth-signup" style="display:none;">
+        <div class="form-group"><label for="signup-name">Full Name</label><input class="input" type="text" id="signup-name" placeholder="As on Aadhaar" /></div>
+        <div class="form-group"><label for="signup-email">Email Address</label><input class="input" type="email" id="signup-email" placeholder="your@email.com" /></div>
+        <div class="form-group"><label for="signup-pass">Password</label><input class="input" type="password" id="signup-pass" placeholder="Min. 8 characters" /></div>
+        <button class="btn btn-primary" id="btn-signup" style="width:100%;justify-content:center;" onclick="doSignup()">Create Account &rarr;</button>
+        <p style="font-size:.75rem;color:var(--text-muted);text-align:center;margin-top:14px;">&#128274; Demo prototype. Use synthetic documents only.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: LANGUAGE ======================== -->
+<div class="page" id="page-language">
+  <div class="page-inner-md">
+    <div class="section-header" style="text-align:center;">
+      <div class="section-tag" style="justify-content:center;">&#127760; Language / &#2349;&#2366;&#2359;&#2366; / &#2349;&#2366;&#2359;&#2366;</div>
+      <h2>Choose Your Language</h2>
+      <p style="margin:0 auto;">Reports, correction guidance and declarations will be generated in your preferred language.</p>
+    </div>
+    <div class="lang-grid">
+      <div class="lang-card selected" id="lang-en" onclick="selectLang('en')"><div class="lang-flag">&#127468;&#127463;</div><div class="lang-name">English</div><div class="lang-native">English</div></div>
+      <div class="lang-card" id="lang-hi" onclick="selectLang('hi')"><div class="lang-flag">&#127470;&#127475;</div><div class="lang-name">Hindi</div><div class="lang-native">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</div></div>
+      <div class="lang-card" id="lang-mr" onclick="selectLang('mr')"><div class="lang-flag">&#127470;&#127475;</div><div class="lang-name">Marathi</div><div class="lang-native">&#2350;&#2352;&#2366;&#2336;&#2368;</div></div>
+      <div class="lang-card" style="opacity:.5;cursor:not-allowed;" onclick="alert('Coming soon via Bhashini API')"><div class="lang-flag">&#127470;&#127475;</div><div class="lang-name">Tamil</div><div class="lang-native" style="font-size:.85rem;">&#2980;&#2990;&#3007;&#2996;&#3021; &middot; Coming Soon</div></div>
+      <div class="lang-card" style="opacity:.5;cursor:not-allowed;" onclick="alert('Coming soon via Bhashini API')"><div class="lang-flag">&#127470;&#127475;</div><div class="lang-name">Telugu</div><div class="lang-native" style="font-size:.85rem;">&#3108;&#3142;&#3122;&#3137;&#3095;&#3137; &middot; Coming Soon</div></div>
+    </div>
+    <div style="text-align:center;margin-top:32px;"><button class="btn btn-primary btn-lg" id="lang-continue" onclick="navigate('dashboard')">Continue &rarr;</button></div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: DASHBOARD ======================== -->
+<div class="page" id="page-dashboard">
+  <div class="page-inner">
+    <div class="dash-welcome">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div><p class="text-muted text-sm mb-1" id="dash-date"></p><h2 id="dash-greeting">Welcome</h2><p class="text-secondary text-sm mt-2">Check your document consistency status below.</p></div>
+        <button class="btn btn-primary" id="dash-upload-btn" onclick="navigate('upload')">+ Upload Documents</button>
+      </div>
+    </div>
+    <div class="progress-steps mb-6">
+      <div class="progress-step"><div class="step-circle done" id="step-1">&#10003;</div><div class="step-label">Account Created</div></div>
+      <div class="progress-step"><div class="step-circle done" id="step-2">&#10003;</div><div class="step-label">Language Set</div></div>
+      <div class="progress-step"><div class="step-circle active" id="step-3">3</div><div class="step-label">Upload Docs</div></div>
+      <div class="progress-step"><div class="step-circle" id="step-4">4</div><div class="step-label">Run Analysis</div></div>
+      <div class="progress-step"><div class="step-circle" id="step-5">5</div><div class="step-label">View Report</div></div>
+      <div class="progress-step"><div class="step-circle" id="step-6">6</div><div class="step-label">Correction Kit</div></div>
+    </div>
+    <div class="grid-4 mb-6">
+      <div class="card stat-card"><div class="stat-icon" style="background:rgba(249,115,22,.1);">&#128196;</div><div class="stat-value text-saffron" id="stat-docs">0</div><div class="stat-label">Documents Uploaded</div></div>
+      <div class="card stat-card"><div class="stat-icon" style="background:rgba(34,197,94,.1);">&#9989;</div><div class="stat-value text-green" id="stat-consensus">&mdash;</div><div class="stat-label">Fields in Consensus</div></div>
+      <div class="card stat-card"><div class="stat-icon" style="background:rgba(239,68,68,.1);">&#9888;&#65039;</div><div class="stat-value" style="color:var(--red-400);" id="stat-issues">&mdash;</div><div class="stat-label">Issues Found</div></div>
+      <div class="card stat-card"><div class="stat-icon" style="background:rgba(96,165,250,.1);">&#128737;&#65039;</div><div class="stat-value text-secondary" id="stat-status">Pending</div><div class="stat-label">Verification Status</div></div>
+    </div>
+    <div class="alert alert-warning mb-6"><span>&#128274;</span><div><strong>Privacy Notice:</strong> Demo only. Use synthetic documents &mdash; never upload real Aadhaar, PAN, or sensitive personal information. Documents are processed in-memory and not stored permanently.</div></div>
+    <div class="grid-2">
+      <div class="card" style="padding:28px;"><div style="font-size:2rem;margin-bottom:12px;">&#128194;</div><h3 class="mb-2">Upload Documents</h3><p class="text-secondary text-sm mb-4">Upload Aadhaar, PAN, Birth Certificate, School Leaving Certificate, or Marksheet for cross-document consistency checking.</p><button class="btn btn-primary btn-sm" onclick="navigate('upload')">Upload Now &rarr;</button></div>
+      <div class="card" style="padding:28px;opacity:.6;"><div style="font-size:2rem;margin-bottom:12px;">&#127963;&#65039;</div><h3 class="mb-2">DigiLocker <span class="badge badge-info" style="vertical-align:middle;font-size:.65rem;">Coming Soon</span></h3><p class="text-secondary text-sm mb-4">Import documents directly from DigiLocker with one-click consent. Official integration is planned for a future release.</p><button class="btn btn-secondary btn-sm" disabled style="cursor:not-allowed;">Connect DigiLocker</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: UPLOAD ======================== -->
+<div class="page" id="page-upload">
+  <div class="page-inner">
+    <div class="section-header">
+      <div class="section-tag" style="background:transparent; border:none; letter-spacing:0.15em; font-size:0.7rem; color:var(--saffron-600); font-weight:700; text-transform:uppercase; padding:0;">UPLOAD</div>
+      <h2>Build your document set</h2>
+      <p>Add at least three identity-related documents to create a meaningful cross-<br/>document consensus check.</p>
+    </div>
+    <div style="display:flex; gap:10px; margin-bottom: 24px;">
+      <button class="btn btn-primary" style="background:var(--saffron-500); color:#fff;" onclick="loadWinningDemo()">&#127942; Load Winning Demo</button>
+      <button class="btn btn-secondary" onclick="clearDocs()">&#128465;&#65039; Clear Documents</button>
+    </div>
+    <div class="alert alert-info mb-6"><span>&#127917;</span><div><strong>Demo Mode:</strong> Click any document card to load synthetic (fictional) data. The system simulates Gemini multimodal extraction. All values are fake.</div></div>
+    <div class="doc-grid" id="doc-type-grid"></div>
+    <div class="divider"></div>
+    <div class="upload-zone" id="upload-zone" onclick="handleUploadZoneClick()">
+      <div class="upload-icon">&#128193;</div>
+      <h3>Drag &amp; Drop or Click to Upload</h3>
+      <p>Supported: PDF, JPEG, PNG &middot; Max 10 MB per file<br/><span class="text-xs" style="color:var(--saffron-400);">In production: files are encrypted with AES-256-GCM before processing</span></p>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:28px;flex-wrap:wrap;gap:12px;">
+      <span id="upload-count-label" class="text-secondary text-sm">0 documents loaded</span>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-secondary" id="clear-btn" onclick="clearDocs()">Clear All</button>
+        <button class="btn btn-primary" id="analyze-btn" onclick="runAnalysis()" disabled>&#128269; Run Consensus Analysis</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: REPORT ======================== -->
+<div class="page" id="page-report">
+  <div class="page-inner">
+    <div class="section-header">
+      <div class="section-tag">&#128202; Consensus Report</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div><h2>Document Consistency Report</h2><p>Cross-document consistency only &mdash; not legal correctness or scheme eligibility.</p></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" id="goto-kit-btn" onclick="navigate('guidance')">&#128203; Correction Kit</button>
+          <button class="btn btn-secondary btn-sm" id="export-btn" onclick="printReport()">&#128424;&#65039; Export PDF</button>
+        </div>
+      </div>
+    </div>
+    <div id="report-summary-banner" class="mb-6"></div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showReportTab('fields')" id="rtab-fields">Field-by-Field Results</button>
+      <button class="tab-btn" onclick="showReportTab('docs')" id="rtab-docs">Documents Analysed</button>
+      <button class="tab-btn" onclick="showReportTab('profile')" id="rtab-profile">Consensus Profile</button>
+    </div>
+    <div id="report-tab-fields"></div>
+    <div id="report-tab-docs" style="display:none;"></div>
+    <div id="report-tab-profile" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: GUIDANCE ======================== -->
+<div class="page" id="page-guidance">
+  <div class="page-inner">
+    <div class="section-header">
+      <div class="section-tag">&#128295; Correction Kit</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div><h2>Correction Guidance</h2><p>Evidence-backed, advisory guidance only. The legal correction always remains with the issuing authority.</p></div>
+        <button class="btn btn-secondary btn-sm" id="back-to-report" onclick="navigate('report')">&larr; Back to Report</button>
+      </div>
+    </div>
+    <div class="alert alert-danger mb-6"><span>&#9888;&#65039;</span><div><strong>Important Disclaimer:</strong> This tool verifies <em>document consistency only</em> &mdash; not legal correctness or scheme eligibility. All guidance is advisory. Verify with the relevant issuing authority before taking any action. <em>Nirdosh Vault does not replace any government authority.</em></div></div>
+    <div id="guidance-content"></div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: AUDIT ======================== -->
+<div class="page" id="page-audit">
+  <div class="page-inner">
+    <div class="section-header">
+      <div class="section-tag">&#128203; Audit Trail</div>
+      <h2>Decision Audit Log</h2>
+      <p>Every action is logged with rule IDs, confidence labels, and evidence references. Raw PII is never logged.</p>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:8px;"><div class="dot-pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><span class="text-sm font-semibold">Live Audit Stream</span></div>
+        <span class="badge badge-info">Structured Log</span>
+      </div>
+      <div style="padding:0 20px;" id="audit-log-content"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+'use strict';
+
+// ─── State ───────────────────────────────────────────────────────
+var State = { user:null, language:'en', loadedDocs:{}, analysisResult:null, auditLog:[], analysisRun:false };
+
+// ─── Translations ────────────────────────────────────────────────
+var T = {
+  en:{ welcome:'Welcome back', disclaimer:'Draft for review — verify with the relevant authority before notarization or submission.' },
+  hi:{ welcome:'\u0935\u093e\u092a\u0938 \u0938\u094d\u0935\u093e\u0917\u0924 \u0939\u0948', disclaimer:'\u0938\u092e\u0940\u0915\u094d\u0937\u093e \u0915\u0947 \u0932\u093f\u090f \u092e\u0938\u094c\u0926\u093e \u2014 \u0928\u094b\u091f\u0930\u0940\u0915\u0930\u0923 \u092f\u093e \u0938\u092c\u092e\u093f\u0936\u0928 \u0938\u0947 \u092a\u0939\u0932\u0947 \u0938\u0902\u092c\u0902\u0927\u093f\u0924 \u092a\u094d\u0930\u093e\u0927\u093f\u0915\u0930\u0923 \u0938\u0947 \u0938\u0924\u094d\u092f\u093e\u092a\u093f\u0924 \u0915\u0930\u0947\u0902\u0964' },
+  mr:{ welcome:'\u092a\u0930\u0924 \u0938\u094d\u0935\u093e\u0917\u0924 \u0906\u0939\u0947', disclaimer:'\u0906\u0922\u093e\u0935\u093e \u0918\u0947\u0923\u094d\u092f\u093e\u0938\u093e\u0920\u0940 \u092e\u0938\u0941\u0926\u093e \u2014 \u0928\u094b\u091f\u0930\u0940\u0915\u0930\u0923 \u0915\u093f\u0902\u0935\u093e \u0938\u092c\u092e\u093f\u0936\u0928 \u0915\u0930\u0923\u094d\u092f\u093e\u092a\u0942\u0930\u094d\u0935\u0940 \u0938\u0902\u092c\u0902\u0927\u093f\u0924 \u092a\u094d\u0930\u093e\u0927\u093f\u0915\u0930\u0923\u093e\u0915\u0921\u0947 \u0938\u0924\u094d\u092f\u093e\u092a\u093f\u0924 \u0915\u0930\u093e\u0964' },
+};
+function tr(k){ return (T[State.language]||T.en)[k]||k; }
+
+// ─── Synthetic Document Data ─────────────────────────────────────
+// Deliberate mismatches:
+//  full_name: Birth Cert has "Sanjay Paatil" typo => outlier (4 vs 1)
+//  dob: Aadhaar+PAN=2004-05-12, SLC+Marksheet=2004-05-13 => no_consensus (2 vs 2)
+//      Birth Cert year-only "2004" => incomplete_date_conflict
+//  gender: all five agree "Male" => consensus_established (high, 5/5)
+var DOCS = {
+  aadhaar:{docType:'aadhaar',title:'Aadhaar Card',icon:'&#128219;',fields:[
+    {fieldKey:'full_name',label:'Name',value:'Sanjay Patil',normalized:'sanjay patil',confidence:.97},
+    {fieldKey:'dob',label:'Date of Birth',value:'12/05/2004',normalized:'2004-05-12',confidence:.96},
+    {fieldKey:'gender',label:'Gender',value:'Male',normalized:'male',confidence:.99},
+    {fieldKey:'aadhaar_no',label:'Aadhaar Number',value:'XXXX XXXX 4782',normalized:'xxxx xxxx 4782',confidence:.99},
+  ]},
+  pan:{docType:'pan',title:'PAN Card',icon:'&#128179;',fields:[
+    {fieldKey:'full_name',label:'Name',value:'Sanjay Patil',normalized:'sanjay patil',confidence:.95},
+    {fieldKey:'dob',label:'Date of Birth',value:'12/05/2004',normalized:'2004-05-12',confidence:.94},
+    {fieldKey:'gender',label:'Gender',value:'Male',normalized:'male',confidence:.98},
+    {fieldKey:'pan_no',label:'PAN Number',value:'ABCPS4782K',normalized:'abcps4782k',confidence:.99},
+  ]},
+  birth_cert:{docType:'birth_cert',title:'Birth Certificate',icon:'&#128220;',fields:[
+    {fieldKey:'full_name',label:'Name',value:'Sanjay Paatil',normalized:'sanjay paatil',confidence:.88},
+    {fieldKey:'dob',label:'Year of Birth',value:'2004',normalized:'2004',confidence:.96,incomplete:true},
+    {fieldKey:'gender',label:'Gender',value:'Male',normalized:'male',confidence:.99},
+  ]},
+  slc:{docType:'slc',title:'School Leaving Cert.',icon:'&#127891;',fields:[
+    {fieldKey:'full_name',label:'Name',value:'Sanjay Patil',normalized:'sanjay patil',confidence:.93},
+    {fieldKey:'dob',label:'Date of Birth',value:'13/05/2004',normalized:'2004-05-13',confidence:.91},
+    {fieldKey:'gender',label:'Gender',value:'Male',normalized:'male',confidence:.97},
+  ]},
+  marksheet:{docType:'marksheet',title:'Marksheet (SSC)',icon:'&#128203;',fields:[
+    {fieldKey:'full_name',label:'Name',value:'Sanjay Patil',normalized:'sanjay patil',confidence:.92},
+    {fieldKey:'dob',label:'Date of Birth',value:'13/05/2004',normalized:'2004-05-13',confidence:.9},
+    {fieldKey:'gender',label:'Gender',value:'Male',normalized:'male',confidence:.96},
+  ]},
+};
+var DOC_TYPES = Object.keys(DOCS);
+
+// ─── Rule Database ───────────────────────────────────────────────
+var RULES = {
+  name_aadhaar:{ruleId:'UIDAI-NAME-001',authority:'UIDAI',documentType:'Aadhaar',field:'Name',
+    action:'Submit name correction request via UIDAI Self-Service Update Portal or Aadhaar Seva Kendra with valid proof of identity.',
+    requiredDocuments:['Passport / Voter ID / Driving Licence (any one as proof of name)'],
+    sourceUrl:'https://uidai.gov.in/en/my-aadhaar/update-aadhaar.html',sourceTitle:'UIDAI — Update Aadhaar',version:'2024-01'},
+  name_birth:{ruleId:'RBD-NAME-001',authority:'Registrar of Births and Deaths',documentType:'Birth Certificate',field:'Name',
+    action:'File a correction application with the local Registrar of Births and Deaths. Clerical errors may be corrected with school records. Substantive changes require an affidavit and may require a court order.',
+    requiredDocuments:['School Admission Record','School Leaving Certificate','Affidavit (for substantive changes)'],
+    sourceUrl:'https://rbdservices.maharashtra.gov.in/',sourceTitle:'Registration of Births and Deaths Act, 1969 — Sections 13-15',version:'2023-11'},
+  dob_aadhaar:{ruleId:'UIDAI-DOB-001',authority:'UIDAI',documentType:'Aadhaar',field:'Date of Birth',
+    action:'DOB correction in Aadhaar is limited to once in a lifetime and requires strong proof of DOB. Submit via UIDAI Seva Kendra with original birth certificate or passport.',
+    requiredDocuments:['Original Birth Certificate','Passport'],
+    sourceUrl:'https://uidai.gov.in/en/my-aadhaar/update-aadhaar.html',sourceTitle:'UIDAI Exception Handling SOP — 28 Oct 2021',version:'2021-10'},
+  dob_pan:{ruleId:'ITDEP-DOB-001',authority:'Income Tax Department / Protean (NSDL)',documentType:'PAN',field:'Date of Birth',
+    action:'Submit PAN correction application (Form 49A or online via NSDL/UTIITSL) with proof of DOB. Processing typically takes 15-20 working days.',
+    requiredDocuments:['Birth Certificate','Passport','School Leaving Certificate (as proof of DOB)'],
+    sourceUrl:'https://www.protean-tinpan.com/',sourceTitle:'PAN Form 49A — Income Tax Department / Protean',version:'2024-03'},
+};
+
+// ─── Audit Icon Map ──────────────────────────────────────────────
+var AUDIT_ICONS={
+  'user.login':{icon:'&#128272;',bg:'rgba(96,165,250,.1)'},
+  'document.loaded':{icon:'&#128196;',bg:'rgba(249,115,22,.1)'},
+  'document.quality_checked':{icon:'&#128269;',bg:'rgba(34,197,94,.1)'},
+  'document.extracted':{icon:'&#129302;',bg:'rgba(192,132,252,.1)'},
+  'documents.pairwise_compared':{icon:'&#9878;&#65039;',bg:'rgba(251,191,36,.1)'},
+  'consensus.recalculated':{icon:'&#129518;',bg:'rgba(34,197,94,.1)'},
+  'rules.retrieved':{icon:'&#128218;',bg:'rgba(96,165,250,.1)'},
+  'guidance.generated':{icon:'&#128161;',bg:'rgba(249,115,22,.1)'},
+  'declaration.viewed':{icon:'&#128203;',bg:'rgba(192,132,252,.1)'},
+};
+function auditLog(ev,meta){ State.auditLog.push({event:ev,meta:meta,time:new Date().toLocaleTimeString(),ts:Date.now()}); }
+
+// ─── Helpers ─────────────────────────────────────────────────────
+function fieldLabel(k){
+  return {full_name:'Full Name',dob:'Date of Birth',gender:'Gender',aadhaar_no:'Aadhaar Number',pan_no:'PAN Number'}[k]||k;
+}
+
+// ─── Consensus Identity Engine ───────────────────────────────────
+function runConsensusEngine(docTypes) {
+  var docs = docTypes.map(function(dt){ return DOCS[dt]; });
+  var fkCounts = {};
+  docs.forEach(function(d){ d.fields.forEach(function(f){ fkCounts[f.fieldKey]=(fkCounts[f.fieldKey]||0)+1; }); });
+  var multiFields = Object.keys(fkCounts).filter(function(k){ return fkCounts[k]>=2; });
+  var results = [];
+
+  multiFields.forEach(function(fieldKey){
+    var entries = [];
+    docs.forEach(function(d){
+      var f = d.fields.filter(function(x){ return x.fieldKey===fieldKey; })[0];
+      if(f) entries.push({docType:d.docType,docTitle:d.title,value:f.value,normalized:f.normalized,confidence:f.confidence,incomplete:f.incomplete||false});
+    });
+
+    // Incomplete date check
+    var hasIncomplete = entries.some(function(e){ return e.incomplete; });
+    if(hasIncomplete && fieldKey==='dob'){
+      var completes = entries.filter(function(e){ return !e.incomplete; });
+      var incompletes = entries.filter(function(e){ return e.incomplete; });
+      results.push({fieldKey:fieldKey,label:fieldLabel(fieldKey),status:'incomplete_date_conflict',completeEntries:completes,incompleteEntries:incompletes,entries:entries,confidence:'insufficient',confidenceLabel:'Insufficient — incomplete date conflict',needsManualVerification:true});
+      return;
+    }
+
+    // Group by normalized value
+    var groups = {};
+    entries.forEach(function(e){ if(!groups[e.normalized])groups[e.normalized]=[]; groups[e.normalized].push(e); });
+    var ga = Object.keys(groups).map(function(k){ return groups[k]; }).sort(function(a,b){ return b.length-a.length; });
+    var total = entries.length;
+    var maj = ga[0];
+
+    if(maj.length > total/2){
+      var outliers = entries.filter(function(e){ return e.normalized!==maj[0].normalized; });
+      var cs = maj.length;
+      var cl = cs>=4?'high':cs>=3?'medium':'limited';
+      results.push({fieldKey:fieldKey,label:fieldLabel(fieldKey),status:outliers.length>0?'outliers_found':'consensus_established',consensusValue:maj[0].value,consensusNormalized:maj[0].normalized,supportingDocs:maj,outliers:outliers,entries:entries,confidence:cl,confidenceLabel:cl+' ('+maj.length+' of '+total+' documents agree)',needsManualVerification:false});
+    } else {
+      results.push({fieldKey:fieldKey,label:fieldLabel(fieldKey),status:'no_consensus',groups:ga,entries:entries,confidence:'insufficient',confidenceLabel:'Insufficient — no clear majority',needsManualVerification:true});
+    }
+  });
+  return results;
+}
+
+// ─── Explanation Generator ───────────────────────────────────────
+function generateExplanation(r){
+  if(r.status==='consensus_established') return 'All '+r.supportingDocs.length+' documents agree on "'+r.consensusValue+'". No inconsistency detected for this field.';
+  if(r.status==='outliers_found'){
+    var ol=r.outliers.map(function(o){ return '"'+o.value+'" ('+o.docTitle+')'; }).join(', ');
+    return r.supportingDocs.length+' of '+r.entries.length+' documents support "'+r.consensusValue+'". Different value found in: '+ol+'. This is flagged as a likely inconsistency — it does not mean those documents are legally wrong. Verify with the issuing authority before seeking correction.';
+  }
+  if(r.status==='no_consensus'){
+    var gA=r.groups[0].map(function(e){ return e.docTitle; }).join(', ');
+    var gB=r.groups[1]?r.groups[1].map(function(e){ return e.docTitle; }).join(', '):'';
+    return 'Documents are split — no value has a strict majority. Group A ('+gA+'): "'+r.groups[0][0].value+'". '+(gB?'Group B ('+gB+'): "'+r.groups[1][0].value+'". ':'')+'The system cannot recommend a correction value. Verify original records with the relevant issuing authority.';
+  }
+  if(r.status==='incomplete_date_conflict'){
+    var yo=r.incompleteEntries.map(function(e){ return e.docTitle; }).join(', ');
+    var full=r.completeEntries.map(function(e){ return e.value+' ('+e.docTitle+')'; }).join(', ');
+    return yo+' contains only a birth year ('+r.incompleteEntries[0].value+'), while other documents contain full dates: '+full+'. Even when the year matches, UIDAI recognises "declared/approximate DOB" cases. Verify the underlying original record before drawing conclusions.';
+  }
+  return '';
+}
+
+// ─── Correction Guidance Retriever ──────────────────────────────
+function getGuidance(r){
+  if(r.status==='consensus_established') return null;
+  var rules=[];
+  if(r.fieldKey==='full_name'){
+    var odc=r.outliers?r.outliers.map(function(o){ return o.docType; }):[];
+    if(odc.indexOf('birth_cert')>=0) rules.push(RULES.name_birth);
+    rules.push(RULES.name_aadhaar);
+  }
+  if(r.fieldKey==='dob'){ rules.push(RULES.dob_aadhaar); rules.push(RULES.dob_pan); }
+  return rules.length?rules:null;
+}
+
+// ─── Router ─────────────────────────────────────────────────────
+var PAGES=['landing','auth','language','dashboard','upload','report','guidance','audit'];
+function navigate(page){
+  PAGES.forEach(function(p){ var el=document.getElementById('page-'+p); if(el)el.classList.remove('active'); });
+  var el=document.getElementById('page-'+page); if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+  var showNav=['landing','auth','language'].indexOf(page)<0;
+  document.getElementById('navbar').style.display=showNav?'flex':'none';
+  ['dashboard','upload','report','guidance','audit'].forEach(function(id){ var n=document.getElementById('nav-'+id); if(n)n.classList.toggle('active',id===page); });
+  if(page==='dashboard')initDashboard();
+  if(page==='upload')initUpload();
+  if(page==='report')initReport();
+  if(page==='guidance')initGuidance();
+  if(page==='audit')renderAuditLog();
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────
+function switchAuthTab(tab){
+  document.getElementById('auth-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('auth-signup').style.display=tab==='signup'?'block':'none';
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-signup').classList.toggle('active',tab==='signup');
+}
+function doLogin(){
+  var email=document.getElementById('login-email').value.trim();
+  var pass=document.getElementById('login-pass').value.trim();
+  if(!email||!pass){alert('Please enter email and password.');return;}
+  var name=email==='sanjay@demo.in'?'Sanjay Patil':email.split('@')[0];
+  State.user={name:name,email:email};
+  document.getElementById('nav-avatar').textContent=name[0].toUpperCase();
+  auditLog('user.login',{email:email,method:'password',jwt:'eyJhbGciOiJIUzI1NiJ9...[truncated]'});
+  navigate('language');
+}
+function doSignup(){
+  var name=document.getElementById('signup-name').value.trim();
+  var email=document.getElementById('signup-email').value.trim();
+  var pass=document.getElementById('signup-pass').value.trim();
+  if(!name||!email||!pass){alert('Please fill all fields.');return;}
+  if(pass.length<6){alert('Password must be at least 6 characters.');return;}
+  State.user={name:name,email:email};
+  document.getElementById('nav-avatar').textContent=name[0].toUpperCase();
+  auditLog('user.login',{email:email,method:'signup'});
+  navigate('language');
+}
+function logout(){ if(!confirm('Sign out?'))return; State.user=null;State.loadedDocs={};State.analysisResult=null;State.auditLog=[];State.analysisRun=false; navigate('landing'); }
+
+// ─── Language ────────────────────────────────────────────────────
+function selectLang(code){
+  State.language=code;
+  ['en','hi','mr'].forEach(function(c){ var el=document.getElementById('lang-'+c); if(el)el.classList.toggle('selected',c===code); });
+  document.getElementById('lang-select').value=code;
+}
+function setLanguage(code){ selectLang(code); }
+
+// ─── Dashboard ───────────────────────────────────────────────────
+function initDashboard(){
+  var now=new Date();
+  document.getElementById('dash-date').textContent=now.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('dash-greeting').textContent=State.user?(tr('welcome')+', '+State.user.name.split(' ')[0]):'Welcome';
+  var dc=Object.values(State.loadedDocs).filter(Boolean).length;
+  document.getElementById('stat-docs').textContent=dc;
+  if(State.analysisResult){
+    var r=State.analysisResult;
+    document.getElementById('stat-consensus').textContent=r.filter(function(x){return x.status==='consensus_established';}).length;
+    document.getElementById('stat-issues').textContent=r.filter(function(x){return x.status!=='consensus_established';}).length;
+    document.getElementById('stat-status').textContent=r.some(function(x){return x.status!=='consensus_established';})? 'Issues Found':'Docs Ready';
+    ['step-3','step-4','step-5','step-6'].forEach(function(id){ var el=document.getElementById(id); if(el){el.classList.add('done');el.textContent='\u2713';el.classList.remove('active');} });
+  }else if(dc>=2){
+    var s3=document.getElementById('step-3');if(s3){s3.classList.add('done');s3.textContent='\u2713';}
+    var s4=document.getElementById('step-4');if(s4)s4.classList.add('active');
+  }
+}
+
+// ─── Upload ──────────────────────────────────────────────────────
+function initUpload(){ renderDocGrid(); }
+function renderDocGrid(){
+  var grid=document.getElementById('doc-type-grid');
+  grid.innerHTML=DOC_TYPES.map(function(dt){
+    var d=DOCS[dt];var loaded=!!State.loadedDocs[dt];
+    return '<div class="doc-card'+(loaded?' loaded':'') +'" id="doccard-'+dt+'" onclick="toggleDoc(\''+dt+'\')">'
+      +'<div class="doc-badge '+(loaded?'green':'red')+'"></div>'
+      +'<div class="doc-type-icon">'+d.icon+'</div>'
+      +'<div class="doc-name">'+d.title+'</div>'
+      +'<div class="doc-status'+(loaded?' ok':'')+'">'+( loaded?'\u2713 Loaded \u2014 click to remove':'Click to load synthetic data')+'</div>'
+      +'</div>';
+  }).join('');
+  updateUploadCount();
+}
+function toggleDoc(dt){
+  if(State.loadedDocs[dt]){ delete State.loadedDocs[dt]; }
+  else{
+    State.loadedDocs[dt]=true; var d=DOCS[dt];
+    auditLog('document.loaded',{docType:dt,title:d.title,synthetic:true});
+    setTimeout(function(){ auditLog('document.quality_checked',{docType:dt,blurScore:'0.91',brightness:'acceptable',orientation:'upright'}); auditLog('document.extracted',{docType:dt,fields:d.fields.map(function(f){return f.fieldKey;}),model:'gemini-3.5-flash [simulated]'}); },200);
+  }
+  State.analysisResult=null;State.analysisRun=false;renderDocGrid();
+}
+function clearDocs(){ State.loadedDocs={};State.analysisResult=null;State.analysisRun=false;renderDocGrid(); }
+function handleUploadZoneClick(){ alert('In production, this opens a file picker and encrypts files with AES-256-GCM before processing.\n\nFor the demo, click the document cards above to load synthetic data.'); }
+function updateUploadCount(){
+  var n=Object.values(State.loadedDocs).filter(Boolean).length;
+  document.getElementById('upload-count-label').textContent=n+' document'+(n!==1?'s':'')+' loaded';
+  var btn=document.getElementById('analyze-btn');
+  btn.disabled=n<2; btn.style.opacity=n<2?'.45':'1';
+}
+
+// ─── Analysis ────────────────────────────────────────────────────
+function runAnalysis(){
+  var dt=Object.keys(State.loadedDocs).filter(function(k){return State.loadedDocs[k];});
+  if(dt.length<2){alert('Please load at least 2 documents.');return;}
+  var loading=document.getElementById('loading');var lt=document.getElementById('loading-text');loading.style.display='flex';
+  var steps=['Running OpenCV quality gate...','Extracting fields with Gemini multimodal...','Normalizing values (names, dates, IDs)...','Running pairwise comparison across all documents...','Computing consensus with majority vote...','Retrieving correction rules from rule database...','Generating plain-language explanations...','Audit log updated. Preparing report...'];
+  var i=0;
+  var iv=setInterval(function(){
+    lt.textContent=steps[i]||'Finalizing...'; i++;
+    if(i>=steps.length){
+      clearInterval(iv);
+      State.analysisResult=runConsensusEngine(dt);State.analysisRun=true;
+      auditLog('documents.pairwise_compared',{docTypes:dt});
+      auditLog('consensus.recalculated',{results:State.analysisResult.map(function(r){return {fieldKey:r.fieldKey,status:r.status,confidence:r.confidence};})});
+      auditLog('rules.retrieved',{ruleIds:['UIDAI-NAME-001','RBD-NAME-001','UIDAI-DOB-001','ITDEP-DOB-001']});
+      auditLog('guidance.generated',{issues:State.analysisResult.filter(function(r){return r.status!=='consensus_established';}).map(function(r){return r.fieldKey;})});
+      setTimeout(function(){loading.style.display='none';navigate('report');},400);
+    }
+  },500);
+}
+
+// ─── Report ──────────────────────────────────────────────────────
+function initReport(){
+  if(!State.analysisResult){
+    document.getElementById('report-tab-fields').innerHTML='<div class="alert alert-warning"><span>&#9888;&#65039;</span><div>No analysis run yet. <a href="#" onclick="navigate(\'upload\')" style="color:inherit;text-decoration:underline;">Upload documents</a> and run the Consensus Analysis first.</div></div>';
+    return;
+  }
+  renderReportSummary();renderFieldsTab();renderDocsTab();renderProfileTab();
+}
+function renderReportSummary(){
+  var r=State.analysisResult;
+  var consensus=r.filter(function(x){return x.status==='consensus_established';}).length;
+  var outliers=r.filter(function(x){return x.status==='outliers_found';}).length;
+  var nocons=r.filter(function(x){return x.status==='no_consensus';}).length;
+  var incomplete=r.filter(function(x){return x.status==='incomplete_date_conflict';}).length;
+  var issues=outliers+nocons+incomplete;
+  var dc=Object.keys(State.loadedDocs).filter(function(k){return State.loadedDocs[k];}).length;
+  var clr=issues>0?'rgba(249,115,22,.06)':'rgba(34,197,94,.06)';var bclr=issues>0?'rgba(249,115,22,.25)':'rgba(34,197,94,.25)';
+  document.getElementById('report-summary-banner').innerHTML='<div class="card" style="padding:28px;background:'+clr+';border-color:'+bclr+';">'
+    +'<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">'
+    +'<div style="font-size:2.5rem;">'+(issues>0?'&#9888;&#65039;':'&#9989;')+'</div>'
+    +'<div style="flex:1;"><h3 style="margin-bottom:6px;">'+(issues>0?(issues+' Issue'+(issues>1?'s':'')+' Found \u2014 Review Required'):'Documents Ready \u2014 No Inconsistencies Found')+'</h3>'
+    +'<p class="text-secondary text-sm">Analysed <strong>'+dc+' documents</strong> across <strong>'+r.length+' shared fields</strong>. <strong class="text-green">'+consensus+' fields in consensus</strong>'+(issues>0?', <strong style="color:var(--saffron-400)">'+outliers+' outlier'+(outliers!==1?'s':'')+'</strong>, <strong style="color:var(--red-400)">'+(nocons+incomplete)+' conflict'+((nocons+incomplete)!==1?'s':'')+'</strong>':'')+'.</p>'
+    +'<p class="text-xs mt-2" style="color:var(--text-muted);">&#8505;&#65039; "Documents Ready" means consistent \u2014 not that you are eligible for any scheme. This tool checks consistency only.</p></div>'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap;">'+(issues>0?'<button class="btn btn-primary btn-sm" onclick="navigate(\'guidance\')">View Correction Kit &rarr;</button>':'')+'<button class="btn btn-secondary btn-sm" onclick="navigate(\'upload\')">Re-Upload</button></div></div></div>';
+}
+function renderFieldsTab(){ document.getElementById('report-tab-fields').innerHTML=State.analysisResult.map(renderFieldRow).join(''); }
+function renderFieldRow(r){
+  var sb={
+    consensus_established:'<span class="badge badge-consensus">&#9989; Consensus Established</span>',
+    outliers_found:'<span class="badge badge-outlier">&#9888;&#65039; Outlier Detected</span>',
+    no_consensus:'<span class="badge badge-conflict">&#128308; No Consensus</span>',
+    incomplete_date_conflict:'<span class="badge badge-conflict">&#128197; Incomplete Date Conflict</span>',
+  }[r.status]||'';
+  var cb='<span class="badge badge-'+r.confidence+'" title="'+r.confidenceLabel+'">'+(r.confidence==='high'?'&#128994;':r.confidence==='medium'?'&#128993;':r.confidence==='limited'?'&#128992;':'&#128308;')+' '+r.confidenceLabel+'</span>';
+  var body='';
+  if(r.status==='consensus_established') body='<div class="consensus-value">'+r.consensusValue+'</div><div class="field-value-row">'+r.supportingDocs.map(function(d){return '<span class="field-doc-chip supporting">&#10003; '+d.docTitle+'</span>';}).join('')+'</div>';
+  if(r.status==='outliers_found') body='<div style="margin-bottom:8px;"><div class="text-xs text-muted mb-1">Consensus Value ('+r.supportingDocs.length+' of '+r.entries.length+' agree)</div><div class="consensus-value">'+r.consensusValue+'</div><div class="field-value-row">'+r.supportingDocs.map(function(d){return '<span class="field-doc-chip supporting">&#10003; '+d.docTitle+'</span>';}).join('')+'</div></div><div style="margin-top:10px;"><div class="text-xs mb-1" style="color:var(--saffron-400);">Likely Outlier'+(r.outliers.length>1?'s':'')+'</div><div class="field-value-row">'+r.outliers.map(function(o){return '<span class="field-doc-chip outlier">&#9888; '+o.docTitle+': &ldquo;'+o.value+'&rdquo;</span>';}).join('')+'</div><p class="text-xs mt-2" style="color:var(--text-muted);">&#8505;&#65039; "Likely outlier" = inconsistent with majority, not necessarily legally wrong.</p></div>';
+  if(r.status==='no_consensus') body='<div class="conflict-groups">'+r.groups.map(function(g,i){return '<div class="conflict-group conflict-group-'+(i===0?'a':'b')+'"><div class="conflict-label '+(i===0?'a':'b')+'">Group '+(i===0?'A':'B')+' \u2014 '+g.length+' doc'+(g.length>1?'s':'')+'</div><div style="font-weight:600;margin-bottom:6px;">&ldquo;'+g[0].value+'&rdquo;</div>'+g.map(function(e){return '<span class="field-doc-chip conflict" style="font-size:.7rem;margin:2px 0;display:inline-block;">'+e.docTitle+'</span>';}).join('')+'</div>';}).join('')+'</div><p class="text-xs mt-3" style="color:var(--red-400);">&#9940; No suggested correct value \u2014 no majority. Verify original records with the relevant issuing authority.</p>';
+  if(r.status==='incomplete_date_conflict') body='<div style="margin-bottom:8px;"><div class="text-xs text-muted mb-1">Complete date documents</div><div class="field-value-row">'+r.completeEntries.map(function(e){return '<span class="field-doc-chip supporting">&#128197; '+e.docTitle+': &ldquo;'+e.value+'&rdquo;</span>';}).join('')+'</div></div><div style="margin-top:10px;"><div class="text-xs mb-1" style="color:var(--amber-400);">Year-only documents (Declared/Approximate DOB)</div><div class="field-value-row">'+r.incompleteEntries.map(function(e){return '<span class="field-doc-chip outlier">&#128197; '+e.docTitle+': &ldquo;'+e.value+'&rdquo; (year only)</span>';}).join('')+'</div></div><p class="text-xs mt-2" style="color:var(--amber-400);">&#8505;&#65039; Year-only DOB vs full DOB \u2014 classified as incomplete-date conflict, not an automatic match.</p>';
+  return '<div class="field-row"><div class="field-header"><div><div class="font-semibold mb-1">'+r.label+'</div><div class="field-key">'+r.fieldKey+'</div></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'+cb+sb+'</div></div>'+body+'<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--glass-border);"><div class="text-xs text-muted mb-1">&#129302; Explanation</div><p class="text-sm" style="color:var(--text-secondary);line-height:1.7;">'+generateExplanation(r)+'</p></div></div>';
+}
+function renderDocsTab(){
+  var dts=Object.keys(State.loadedDocs).filter(function(k){return State.loadedDocs[k];});
+  document.getElementById('report-tab-docs').innerHTML='<div class="doc-grid">'+dts.map(function(dt){
+    var d=DOCS[dt];var ac=(d.fields.reduce(function(s,f){return s+f.confidence;},0)/d.fields.length*100).toFixed(0);
+    return '<div class="card doc-card loaded" style="cursor:default;"><div class="doc-badge green"></div><div class="doc-type-icon">'+d.icon+'</div><div class="doc-name">'+d.title+'</div><div class="doc-status ok" style="margin-bottom:10px;">Extraction Complete</div><div class="divider" style="margin:8px 0;"></div>'+d.fields.map(function(f){return '<div style="font-size:.72rem;margin:4px 0;display:flex;justify-content:space-between;gap:6px;"><span style="color:var(--text-muted);">'+f.label+'</span><span style="font-weight:500;text-align:right;">'+f.value+'</span></div>';}).join('')+'<div class="divider" style="margin:8px 0;"></div><div class="badge badge-high" style="width:100%;justify-content:center;">Avg confidence: '+ac+'%</div></div>';
+  }).join('')+'</div>';
+}
+function renderProfileTab(){
+  var r=State.analysisResult;var dts=Object.keys(State.loadedDocs).filter(function(k){return State.loadedDocs[k];});
+  document.getElementById('report-tab-profile').innerHTML='<div class="card" style="padding:28px;"><h3 style="margin-bottom:4px;">Consensus Identity Profile</h3><p class="text-secondary text-sm mb-4">Fields with established consensus. Outlier and conflict fields are excluded.</p><div class="alert alert-info mb-4"><span>&#8505;&#65039;</span><span>This profile shows <strong>document consistency</strong>, not legal identity. The issuing authority for each document remains the source of legal truth.</span></div>'+r.map(function(res){if(res.status!=='consensus_established'&&res.status!=='outliers_found')return '';var ip=res.status==='consensus_established';return '<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--glass-border);"><div style="min-width:140px;font-size:.82rem;color:var(--text-muted);">'+res.label+'</div><div style="flex:1;font-weight:600;">'+(res.consensusValue||'\u2014')+'</div>'+(ip?'<span class="badge badge-consensus">&#9989; In Profile</span>':'<span class="badge badge-outlier">&#9888;&#65039; Has Outlier</span>')+'</div>';}).join('')+r.filter(function(x){return x.status==='no_consensus'||x.status==='incomplete_date_conflict';}).map(function(res){return '<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--glass-border);opacity:.7;"><div style="min-width:140px;font-size:.82rem;color:var(--text-muted);">'+res.label+'</div><div style="flex:1;font-style:italic;color:var(--text-muted);">Excluded \u2014 '+(res.status==='no_consensus'?'No consensus':'Incomplete date conflict')+'</div><span class="badge badge-conflict">&#9940; Excluded</span></div>';}).join('')+'<div style="margin-top:20px;padding-top:16px;border-top:2px solid var(--glass-border);"><div class="text-xs text-muted">Documents: '+dts.map(function(dt){return DOCS[dt].title;}).join(' \u00b7 ')+'</div></div></div>';
+}
+function showReportTab(tab){
+  ['fields','docs','profile'].forEach(function(t){ document.getElementById('report-tab-'+t).style.display=t===tab?'block':'none'; document.getElementById('rtab-'+t).classList.toggle('active',t===tab); });
+}
+
+// ─── Guidance ────────────────────────────────────────────────────
+function initGuidance(){
+  if(!State.analysisResult){document.getElementById('guidance-content').innerHTML='<div class="alert alert-warning"><span>&#9888;&#65039;</span><div>No analysis run yet. Please upload documents and run the analysis first.</div></div>';return;}
+  auditLog('declaration.viewed',{page:'correction-guidance'});
+  var issues=State.analysisResult.filter(function(r){return r.status!=='consensus_established';});
+  var clean=State.analysisResult.filter(function(r){return r.status==='consensus_established';});
+  if(!issues.length){document.getElementById('guidance-content').innerHTML='<div class="alert alert-success"><span>&#9989;</span><div><strong>No issues found!</strong> All '+clean.length+' checked fields are in consensus. No correction guidance needed.</div></div>';return;}
+  var html=issues.map(function(result){
+    var rules=getGuidance(result);var explanation=generateExplanation(result);
+    var isNC=result.status==='no_consensus';var isID=result.status==='incomplete_date_conflict';
+    var cc=isNC||isID?'conflict-card':'outlier-card';
+    var stepsHtml='';
+    if(isNC) stepsHtml='<ol class="kit-steps"><li><div class="step-num">1</div><div>Gather original records for <strong>'+result.label+'</strong> from all issuing authorities involved.</div></li><li><div class="step-num">2</div><div>Verify which value is recorded on the original register (birth register, enrollment register, etc.).</div></li><li><div class="step-num">3</div><div>Contact the authority of the document with an incorrect value and follow their correction procedure.</div></li><li><div class="step-num">4</div><div>Once corrected, re-upload your updated documents to confirm the inconsistency is resolved.</div></li></ol>';
+    else if(isID) stepsHtml='<ol class="kit-steps"><li><div class="step-num">1</div><div>Obtain your original birth certificate or hospital records to determine the exact date of birth.</div></li><li><div class="step-num">2</div><div>If your Aadhaar shows only a birth year (Declared DOB), contact an Aadhaar Seva Kendra with original proof of DOB.</div></li><li><div class="step-num">3</div><div>Note: UIDAI allows DOB updates only once in a lifetime. Approach carefully with original documents.</div></li><li><div class="step-num">4</div><div>If conflicting full dates exist across other documents, resolve those per the Date of Birth guidance below.</div></li></ol>';
+    else if(rules) stepsHtml='<ol class="kit-steps">'+rules.map(function(rule,i){return '<li><div class="step-num">'+(i+1)+'</div><div><strong>'+rule.documentType+' \u2014 '+rule.field+' Correction</strong><br/><span style="color:var(--text-secondary);">'+rule.action+'</span><div style="margin-top:8px;font-size:.78rem;color:var(--text-muted);">Required: '+rule.requiredDocuments.map(function(d){return '<span class="badge badge-info" style="margin:2px;">'+d+'</span>';}).join('')+'</div></div></li>';}).join('')+'</ol>';
+    var citHtml=rules?rules.map(function(rule){return '<div class="rule-citation">&#128218; <span>Rule <code>'+rule.ruleId+'</code> &middot; '+rule.authority+' &middot; <a href="'+rule.sourceUrl+'" target="_blank" rel="noopener">'+rule.sourceTitle+'</a> &middot; v'+rule.version+'</span></div>';}).join(''):'';
+    return '<div class="card kit-card '+cc+'"><div class="kit-header"><div><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><h3>'+result.label+'</h3>'+(isNC?'<span class="badge badge-conflict">No Consensus</span>':isID?'<span class="badge badge-conflict">Incomplete Date</span>':'<span class="badge badge-outlier">Outlier Found</span>')+'</div><div class="field-key">'+result.fieldKey+'</div></div><div>'+(isNC?'<span class="badge badge-conflict">&#9940; No correction value suggested</span>':'<span class="badge badge-outlier">&#9888;&#65039; Advisory correction path below</span>')+'</div></div><div class="kit-explanation"><strong>Evidence Summary:</strong><br/>'+explanation+'</div>'
+      +(!isNC?'<div style="margin-bottom:14px;"><div class="text-xs text-muted mb-2 font-semibold">&#128203; Recommended Steps</div>'+stepsHtml+'</div>':'<div class="alert alert-danger" style="margin-bottom:14px;"><span>&#9940;</span><div><strong>No correction value suggested.</strong> No majority was found \u2014 Nirdosh Vault cannot recommend which value is correct. Verify original records with the relevant issuing authority.</div></div>'+stepsHtml)
+      +citHtml+'<div class="kit-disclaimer"><span>&#9888;&#65039;</span><div>'+tr('disclaimer')+' Additional documentation may be required depending on the issuing authority.</div></div></div>';
+  }).join('');
+  var cleanHtml=clean.length?'<div class="card" style="padding:24px;margin-top:16px;"><h3 class="mb-3">&#9989; Fields in Consensus \u2014 No Guidance Needed</h3><div style="display:flex;gap:8px;flex-wrap:wrap;">'+clean.map(function(r){return '<span class="badge badge-consensus">&#10003; '+r.label+': &ldquo;'+r.consensusValue+'&rdquo;</span>';}).join('')+'</div></div>':'';
+  document.getElementById('guidance-content').innerHTML=html+cleanHtml;
+}
+
+// ─── Audit Log ───────────────────────────────────────────────────
+function renderAuditLog(){
+  var el=document.getElementById('audit-log-content');
+  if(!State.auditLog.length){el.innerHTML='<div class="audit-row"><div class="text-muted text-sm" style="padding:20px 0;">No audit events yet. Log in and run an analysis to see the decision trail.</div></div>';return;}
+  el.innerHTML=[].concat(State.auditLog).reverse().map(function(entry){
+    var info=AUDIT_ICONS[entry.event]||{icon:'&#128204;',bg:'rgba(255,255,255,.05)'};
+    var ms=JSON.stringify(entry.meta).replace(/"/g,'').replace(/[{}]/g,'').replace(/,/g,' \u00b7 ').substring(0,120);
+    return '<div class="audit-row"><div class="audit-icon" style="background:'+info.bg+';">'+info.icon+'</div><div style="flex:1;"><div class="audit-event">'+entry.event+'</div><div class="audit-meta">'+ms+(ms.length>=120?'\u2026':'')+'</div></div><div class="audit-time">'+entry.time+'</div></div>';
+  }).join('');
+}
+
+// ─── Misc ────────────────────────────────────────────────────────
+function printReport(){ alert('PDF export: In production, the report is rendered as an encrypted, watermarked PDF.\n\nFor the demo, use your browser\'s Print \u2192 Save as PDF.'); window.print(); }
+function showDemoAlert(){ alert('Demo video coming soon!\n\nFor now: click "Get Started Free" to walk through the full prototype flow.\n\nUse only synthetic data \u2014 do NOT upload real personal documents.'); }
+
+window.addEventListener('DOMContentLoaded', function(){ navigate('landing'); });
+</script>
+</body>
+</html>

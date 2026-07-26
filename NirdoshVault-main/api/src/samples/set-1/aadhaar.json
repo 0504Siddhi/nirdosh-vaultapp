@@ -1,0 +1,46 @@
+{
+  "docType": "aadhaar",
+  "fields": [
+    {
+      "fieldKey": "full_name",
+      "label": "Name",
+      "value": "Sanjay Prasad Patil",
+      "normalized": "",
+      "type": "string",
+      "page": 1,
+      "confidence": 0.95,
+      "evidenceText": "Sanjay Prasad Patil"
+    },
+    {
+      "fieldKey": "dob",
+      "label": "Date of Birth",
+      "value": "15/08/1995",
+      "normalized": "",
+      "type": "date",
+      "page": 1,
+      "confidence": 0.97,
+      "evidenceText": "DOB: 15/08/1995"
+    },
+    {
+      "fieldKey": "gender",
+      "label": "Gender",
+      "value": "Male",
+      "normalized": "",
+      "type": "string",
+      "page": 1,
+      "confidence": 0.99,
+      "evidenceText": "Male"
+    },
+    {
+      "fieldKey": "aadhaar_no",
+      "label": "Aadhaar Number",
+      "value": "9876 5432 1098",
+      "normalized": "",
+      "type": "string",
+      "page": 1,
+      "confidence": 0.98,
+      "evidenceText": "9876 5432 1098"
+    }
+  ],
+  "needsReview": false
+}

@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "aliases": {
+    "full_name": ["name", "child_name", "candidate_name", "student_name"],
+    "date_of_birth": ["dob", "birth_date", "year_of_birth"],
+    "gender": ["sex"],
+    "aadhaar_number": ["aadhaar_no"],
+    "pan_number": ["pan_no"],
+    "registration_number": ["reg_no"],
+    "seat_number": ["roll_no"],
+    "school_name": ["institution"],
+    "examination_year": ["exam_year"]
+  }
+}

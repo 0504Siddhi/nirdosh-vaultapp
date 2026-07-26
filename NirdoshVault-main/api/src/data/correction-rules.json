@@ -1,0 +1,112 @@
+{
+  "database_version": "1.0.0",
+  "effective_date": "2026-07-23",
+  "rules": [
+    {
+      "rule_id": "UIDAI-DOB-001",
+      "document_type": "aadhaar",
+      "field_key": "date_of_birth",
+      "scenario": "different_full_date",
+      "priority": 120,
+      "trigger_source": "automatic",
+      "requires_user_input": false,
+      "recommended_action": "Review the date of birth recorded in Aadhaar",
+      "explanation": "The complete date of birth in Aadhaar differs from another uploaded document.",
+      "exact_steps": [
+        "Verify the date against the original birth record.",
+        "If you choose to review Aadhaar, use the current UIDAI update process with an accepted Proof of Birth.",
+        "Retain the acknowledgement or EID."
+      ],
+      "supporting_document_categories": ["UIDAI-accepted Proof of Birth"],
+      "authority": "UIDAI",
+      "channel": ["Aadhaar enrolment/update centre"],
+      "jurisdiction": "India",
+      "rule_status": "verified",
+      "human_review_required": true,
+      "official_source": "UIDAI FAQs - update limits (https://uidai.gov.in/en/277-faqs.html)",
+      "exact_support": "UIDAI describes date-of-birth update limits and update procedures.",
+      "source_checked_date": "2026-07-23",
+      "expires_for_review_on": "2026-10-23",
+      "disclaimer": "Nirdosh Vault identifies a conflict but does not decide which date is legally correct."
+    },
+    {
+      "rule_id": "UIDAI-DOB-002",
+      "document_type": "aadhaar",
+      "field_key": "date_of_birth",
+      "scenario": "year_only_same_year",
+      "priority": 130,
+      "trigger_source": "automatic",
+      "requires_user_input": false,
+      "recommended_action": "Aadhaar shows only the year of birth (Declared DOB)",
+      "explanation": "The year agrees, but Aadhaar does not contain enough information for an exact full-date comparison.",
+      "exact_steps": [
+        "Check the original birth record.",
+        "If a full verified DOB is required for a scheme, use the current UIDAI process with an accepted Proof of Birth."
+      ],
+      "supporting_document_categories": ["Accepted Proof of Birth if a full DOB update is required"],
+      "authority": "UIDAI",
+      "channel": ["Review", "Aadhaar enrolment/update centre if selected"],
+      "jurisdiction": "India",
+      "rule_status": "verified",
+      "human_review_required": true,
+      "official_source": "Your Aadhaar - declared or approximate DOB (https://uidai.gov.in/en/contact-support/have-any-question/280-faqs/your-aadhaar.html)",
+      "exact_support": "UIDAI states that only year of birth is printed where DOB is declared or approximate.",
+      "source_checked_date": "2026-07-23",
+      "expires_for_review_on": "2026-10-23",
+      "disclaimer": "A matching year does not prove that complete dates are identical."
+    },
+    {
+      "rule_id": "PAN-NAME-001",
+      "document_type": "pan",
+      "field_key": "full_name",
+      "scenario": "name_difference_standard",
+      "priority": 100,
+      "trigger_source": "automatic",
+      "requires_user_input": false,
+      "recommended_action": "Review the name recorded in PAN",
+      "explanation": "The name in PAN differs from uploaded evidence.",
+      "exact_steps": [
+        "Verify the original identity records.",
+        "If you choose to update PAN, use a current authorised PAN Change/Correction route.",
+        "Check the current provider form for accepted supporting documents."
+      ],
+      "supporting_document_categories": ["Existing PAN details", "Accepted supporting identity or change documents"],
+      "authority": "Income Tax Department / authorised PAN service provider",
+      "channel": ["Authorised PAN service provider"],
+      "jurisdiction": "India",
+      "rule_status": "authority-dependent",
+      "human_review_required": true,
+      "official_source": "PAN services support ecosystem (https://www.incometax.gov.in/iec/foportal/newdownloads/e-pay-tax)",
+      "exact_support": "The current provider form determines the required supporting documents.",
+      "source_checked_date": "2026-07-23",
+      "expires_for_review_on": "2026-10-23",
+      "disclaimer": "The exact procedure and supporting documents must be checked with the current authorised provider."
+    },
+    {
+      "rule_id": "RBD-DOB-001",
+      "document_type": "birth_certificate",
+      "field_key": "date_of_birth",
+      "scenario": "different_full_date",
+      "priority": 100,
+      "trigger_source": "automatic",
+      "requires_user_input": false,
+      "recommended_action": "Review a birth-certificate date-of-birth difference",
+      "explanation": "Birth-record correction procedures vary by the registrar and jurisdiction.",
+      "exact_steps": [
+        "Verify the original register and supporting records.",
+        "Contact the issuing Registrar of Births and Deaths for the current procedure."
+      ],
+      "supporting_document_categories": ["Original birth record", "Case-specific supporting records requested by the Registrar"],
+      "authority": "Registrar of Births and Deaths",
+      "channel": ["Issuing Registrar"],
+      "jurisdiction": "Authority-dependent",
+      "rule_status": "authority-dependent",
+      "human_review_required": true,
+      "official_source": "Registration of Births and Deaths Act, 1969 - Section 15 (https://www.indiacode.nic.in/)",
+      "exact_support": "Section 15 addresses correction or cancellation of entries.",
+      "source_checked_date": "2026-07-23",
+      "expires_for_review_on": "2026-10-23",
+      "disclaimer": "Nirdosh Vault does not prescribe a universal affidavit, court, or registrar procedure."
+    }
+  ]
+}

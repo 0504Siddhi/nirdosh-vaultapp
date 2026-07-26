@@ -1,0 +1,15 @@
+{
+  "sets": [
+    {
+      "id": "set-1",
+      "name": "Identity Mismatch Demo",
+      "description": "3 synthetic documents (Aadhaar, PAN, Birth Certificate) demonstrating a name mismatch between PAN and the other two documents, plus a year-only DOB on the Birth Certificate.",
+      "scenario": "Consensus on name from Aadhaar + Birth Certificate, PAN has a different spelling. Full DOB on Aadhaar & PAN, year-only on Birth Certificate.",
+      "documents": [
+        { "filename": "aadhaar.jpg", "label": "Aadhaar Card", "docType": "aadhaar" },
+        { "filename": "pan.jpg", "label": "PAN Card", "docType": "pan" },
+        { "filename": "birth-certificate.jpg", "label": "Birth Certificate", "docType": "birth_certificate" }
+      ]
+    }
+  ]
+}

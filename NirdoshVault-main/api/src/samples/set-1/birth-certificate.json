@@ -1,0 +1,46 @@
+{
+  "docType": "birth_certificate",
+  "fields": [
+    {
+      "fieldKey": "full_name",
+      "label": "Name",
+      "value": "Sanjay Prasad Patil",
+      "normalized": "",
+      "type": "string",
+      "page": 1,
+      "confidence": 0.92,
+      "evidenceText": "Child Name: Sanjay Prasad Patil"
+    },
+    {
+      "fieldKey": "dob",
+      "label": "Year of Birth",
+      "value": "1995",
+      "normalized": "",
+      "type": "date",
+      "page": 1,
+      "confidence": 0.90,
+      "evidenceText": "Year of Birth: 1995"
+    },
+    {
+      "fieldKey": "gender",
+      "label": "Gender",
+      "value": "Male",
+      "normalized": "",
+      "type": "string",
+      "page": 1,
+      "confidence": 0.95,
+      "evidenceText": "Sex: Male"
+    },
+    {
+      "fieldKey": "father_name",
+      "label": "Father's Name",
+      "value": "Ramesh Kumar Patil",
+      "normalized": "",
+      "type": "string",
+      "page": 1,
+      "confidence": 0.93,
+      "evidenceText": "Father: Ramesh Kumar Patil"
+    }
+  ],
+  "needsReview": false
+}

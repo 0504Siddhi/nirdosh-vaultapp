@@ -1,0 +1,36 @@
+{
+  "docType": "pan",
+  "fields": [
+    {
+      "fieldKey": "full_name",
+      "label": "Name",
+      "value": "Sanjay P. Patil",
+      "normalized": "",
+      "type": "string",
+      "page": 1,
+      "confidence": 0.94,
+      "evidenceText": "SANJAY P. PATIL"
+    },
+    {
+      "fieldKey": "dob",
+      "label": "Date of Birth",
+      "value": "15/08/1995",
+      "normalized": "",
+      "type": "date",
+      "page": 1,
+      "confidence": 0.96,
+      "evidenceText": "15/08/1995"
+    },
+    {
+      "fieldKey": "pan_no",
+      "label": "PAN Number",
+      "value": "ABCPD1234E",
+      "normalized": "",
+      "type": "string",
+      "page": 1,
+      "confidence": 0.99,
+      "evidenceText": "ABCPD1234E"
+    }
+  ],
+  "needsReview": false
+}

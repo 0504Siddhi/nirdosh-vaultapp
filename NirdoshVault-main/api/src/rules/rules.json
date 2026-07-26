@@ -1,0 +1,344 @@
+[
+  {
+    "ruleId": "UIDAI-NAME-001",
+    "authority": "UIDAI",
+    "documentType": "aadhaar",
+    "field": "full_name",
+    "trigger": "Name mismatch between Aadhaar and other documents",
+    "condition": "outliers_found",
+    "action": "Submit a name correction request via the UIDAI Self-Service Update Portal (ssup.uidai.gov.in) or visit the nearest Aadhaar Seva Kendra with valid supporting proof of identity.",
+    "requiredDocuments": [
+      "Passport (valid)",
+      "Voter ID (EPIC)",
+      "Driving Licence",
+      "PAN Card (if name is consistent across other documents)"
+    ],
+    "severity": "high",
+    "humanReview": false,
+    "sourceUrl": "https://uidai.gov.in/en/my-aadhaar/update-aadhaar.html",
+    "sourceTitle": "UIDAI — Update Aadhaar Demographics",
+    "version": "2024-01",
+    "active": true
+  },
+  {
+    "ruleId": "UIDAI-DOB-001",
+    "authority": "UIDAI",
+    "documentType": "aadhaar",
+    "field": "dob",
+    "trigger": "DOB mismatch, conflict, or incomplete date on Aadhaar",
+    "condition": "any",
+    "action": "DOB correction in Aadhaar is permitted only once in a lifetime. Submit the correction at an Aadhaar Seva Kendra with original proof of date of birth. The biometric exception procedure may apply if no valid proof exists.",
+    "requiredDocuments": [
+      "Original Birth Certificate issued by local government",
+      "Passport (if DOB differs from other records)"
+    ],
+    "severity": "high",
+    "humanReview": true,
+    "sourceUrl": "https://uidai.gov.in/en/my-aadhaar/update-aadhaar.html",
+    "sourceTitle": "UIDAI Exception Handling SOP — 28 Oct 2021",
+    "version": "2021-10",
+    "active": true
+  },
+  {
+    "ruleId": "UIDAI-GENDER-001",
+    "authority": "UIDAI",
+    "documentType": "aadhaar",
+    "field": "gender",
+    "trigger": "Gender mismatch or update request on Aadhaar",
+    "condition": "any",
+    "action": "Gender correction in Aadhaar can be done at an Aadhaar Seva Kendra. Self-declaration is generally accepted for transgender and third-gender individuals; a gazette notification or medical certificate may be required for other corrections.",
+    "requiredDocuments": [
+      "Self-declaration form",
+      "Gazette notification (if applicable)",
+      "Medical certificate (if applicable)"
+    ],
+    "severity": "medium",
+    "humanReview": true,
+    "sourceUrl": "https://uidai.gov.in/en/my-aadhaar/update-aadhaar.html",
+    "sourceTitle": "UIDAI — Gender Update Guidance",
+    "version": "2024-01",
+    "active": true
+  },
+  {
+    "ruleId": "UIDAI-ADDR-001",
+    "authority": "UIDAI",
+    "documentType": "aadhaar",
+    "field": "address",
+    "trigger": "Address mismatch or update required on Aadhaar",
+    "condition": "any",
+    "action": "Address can be updated online via the UIDAI Self-Service Update Portal or at an Aadhaar Seva Kendra using a valid proof of address document.",
+    "requiredDocuments": [
+      "Bank passbook / statement (recent)",
+      "Utility bill (electricity, water, gas — not older than 3 months)",
+      "Rental agreement (registered)"
+    ],
+    "severity": "low",
+    "humanReview": false,
+    "sourceUrl": "https://ssup.uidai.gov.in/",
+    "sourceTitle": "UIDAI — Self Service Update Portal",
+    "version": "2024-01",
+    "active": true
+  },
+  {
+    "ruleId": "ITDEP-NAME-001",
+    "authority": "Income Tax Department / Protean (NSDL)",
+    "documentType": "pan",
+    "field": "full_name",
+    "trigger": "Name mismatch between PAN and other documents",
+    "condition": "outliers_found",
+    "action": "Submit a PAN correction application via the NSDL or UTIITSL portal (online) or in person at a PAN service centre. Use Form 49A for a new PAN or the correction/change form for an existing PAN.",
+    "requiredDocuments": [
+      "Aadhaar Card (if name is consistent on Aadhaar)",
+      "Passport",
+      "Voter ID / Driving Licence",
+      "Birth Certificate (if name needs to match birth records)"
+    ],
+    "severity": "high",
+    "humanReview": false,
+    "sourceUrl": "https://www.protean-tinpan.com/",
+    "sourceTitle": "PAN Form 49A — Income Tax Department / Protean",
+    "version": "2024-03",
+    "active": true
+  },
+  {
+    "ruleId": "ITDEP-DOB-001",
+    "authority": "Income Tax Department / Protean (NSDL)",
+    "documentType": "pan",
+    "field": "dob",
+    "trigger": "DOB mismatch on PAN",
+    "condition": "any",
+    "action": "Submit a PAN correction/update request online via the NSDL or UTIITSL portal with documentary proof of date of birth. Processing typically takes 15–20 working days.",
+    "requiredDocuments": [
+      "Birth Certificate",
+      "Passport (DOB page)",
+      "School Leaving Certificate / Marksheet (for DOB verification)"
+    ],
+    "severity": "high",
+    "humanReview": false,
+    "sourceUrl": "https://www.protean-tinpan.com/",
+    "sourceTitle": "PAN — DOB Correction, Form 49A Instructions",
+    "version": "2024-03",
+    "active": true
+  },
+  {
+    "ruleId": "ITDEP-FNAME-001",
+    "authority": "Income Tax Department / Protean (NSDL)",
+    "documentType": "pan",
+    "field": "father_name",
+    "trigger": "Father/mother name mismatch on PAN",
+    "condition": "outliers_found",
+    "action": "Submit a PAN correction request with supporting documents showing the correct father's/mother's name. This typically requires birth certificate or gazette notification.",
+    "requiredDocuments": [
+      "Birth Certificate (showing parent names)",
+      "Gazette notification (if names were officially changed)",
+      "Affidavit of correction (for clerical errors)"
+    ],
+    "severity": "medium",
+    "humanReview": false,
+    "sourceUrl": "https://www.protean-tinpan.com/",
+    "sourceTitle": "PAN — Parent Name Correction Instructions",
+    "version": "2024-03",
+    "active": true
+  },
+  {
+    "ruleId": "ITDEP-GENDER-001",
+    "authority": "Income Tax Department / Protean (NSDL)",
+    "documentType": "pan",
+    "field": "gender",
+    "trigger": "Gender mismatch on PAN",
+    "condition": "any",
+    "action": "Submit a PAN correction application with documentary proof of gender. For transgender individuals, a self-declaration may suffice.",
+    "requiredDocuments": [
+      "Aadhaar Card (updated gender)",
+      "Medical certificate (if applicable)",
+      "Self-declaration"
+    ],
+    "severity": "medium",
+    "humanReview": false,
+    "sourceUrl": "https://www.protean-tinpan.com/",
+    "sourceTitle": "PAN — Gender Correction Instructions",
+    "version": "2024-03",
+    "active": true
+  },
+  {
+    "ruleId": "RBD-NAME-001",
+    "authority": "Registrar of Births and Deaths",
+    "documentType": "birth_certificate",
+    "field": "full_name",
+    "trigger": "Name mismatch on Birth Certificate",
+    "condition": "outliers_found",
+    "action": "File a correction application with the concerned local Registrar of Births and Deaths office. Distinguish between a clerical error (simpler correction) and a substantive change (requires affidavit and may require court order under Section 15 of the Registration of Births and Deaths Act, 1969).",
+    "requiredDocuments": [
+      "School Admission Register extract",
+      "School Leaving Certificate / TC",
+      "Affidavit from First Class Magistrate (for substantive changes)",
+      "Parent's Aadhaar and PAN (supporting)"
+    ],
+    "severity": "medium",
+    "humanReview": true,
+    "sourceUrl": "https://rbdservices.maharashtra.gov.in/",
+    "sourceTitle": "Registration of Births and Deaths Act, 1969 — Sections 13, 14, 15 (2023 Amendment)",
+    "version": "2023-11",
+    "active": true
+  },
+  {
+    "ruleId": "RBD-DOB-001",
+    "authority": "Registrar of Births and Deaths",
+    "documentType": "birth_certificate",
+    "field": "dob",
+    "trigger": "DOB mismatch or incomplete date on Birth Certificate",
+    "condition": "any",
+    "action": "DOB corrections on a birth certificate are legally sensitive. Clerical corrections can be made at the Registrar's office with supporting hospital records. Substantive changes require a court order. Delayed registrations follow a different (longer) process. Contact your state's RBD service portal.",
+    "requiredDocuments": [
+      "Hospital discharge summary / birth records",
+      "Midwife / doctor's certificate",
+      "Affidavit (for corrections after 1 year of registration)",
+      "Court order (for substantive changes to DOB)"
+    ],
+    "severity": "high",
+    "humanReview": true,
+    "sourceUrl": "https://crsorgi.gov.in/",
+    "sourceTitle": "Civil Registration System — Registrar General of India",
+    "version": "2023-11",
+    "active": true
+  },
+  {
+    "ruleId": "RBD-PARENT-001",
+    "authority": "Registrar of Births and Deaths",
+    "documentType": "birth_certificate",
+    "field": "parent_name",
+    "trigger": "Parent name mismatch on Birth Certificate",
+    "condition": "outliers_found",
+    "action": "Corrections to parent names on a birth certificate require strong documentary evidence. File with the local Registrar. A gazette notification or court order may be required for substantive changes.",
+    "requiredDocuments": [
+      "Parent's identity documents (Aadhaar, Passport)",
+      "Marriage certificate",
+      "Gazette notification (if names were changed)",
+      "Affidavit"
+    ],
+    "severity": "medium",
+    "humanReview": true,
+    "sourceUrl": "https://rbdservices.maharashtra.gov.in/",
+    "sourceTitle": "Registration of Births and Deaths Act, 1969 — Section 13",
+    "version": "2023-11",
+    "active": true
+  },
+  {
+    "ruleId": "RBD-CHILDNAME-001",
+    "authority": "Registrar of Births and Deaths",
+    "documentType": "birth_certificate",
+    "field": "child_name",
+    "trigger": "Child name not recorded or mismatched on Birth Certificate",
+    "condition": "any",
+    "action": "If the child's name was not entered at the time of registration, a 'name inclusion' can be done within one year of birth at the Registrar's office. After one year, a correction procedure applies.",
+    "requiredDocuments": [
+      "Original birth certificate (without name)",
+      "School admission record showing the name",
+      "Parent's affidavit for the intended name"
+    ],
+    "severity": "low",
+    "humanReview": false,
+    "sourceUrl": "https://crsorgi.gov.in/",
+    "sourceTitle": "Civil Registration System — Name Inclusion Procedure",
+    "version": "2023-11",
+    "active": true
+  },
+  {
+    "ruleId": "SCHOOL-NAME-001",
+    "authority": "School / State Board of Education",
+    "documentType": "school_leaving_certificate",
+    "field": "full_name",
+    "trigger": "Name mismatch on School Leaving Certificate / TC",
+    "condition": "outliers_found",
+    "action": "Contact the issuing school's principal or the relevant State Board of Secondary Education. Provide documentary proof of the correct name. An affidavit and gazette notification are typically required for name changes. Corrections are processed through the school and forwarded to the Board.",
+    "requiredDocuments": [
+      "Aadhaar Card (as proof of correct name)",
+      "Birth Certificate",
+      "Affidavit from First Class Magistrate",
+      "Gazette notification (if name was officially changed)"
+    ],
+    "severity": "medium",
+    "humanReview": true,
+    "sourceUrl": "https://mahahsscboard.in/",
+    "sourceTitle": "Maharashtra State Board — TC / SLC Correction Procedure",
+    "version": "2024-01",
+    "active": true
+  },
+  {
+    "ruleId": "SCHOOL-DOB-001",
+    "authority": "School / State Board of Education",
+    "documentType": "school_leaving_certificate",
+    "field": "dob",
+    "trigger": "DOB mismatch on School Leaving Certificate",
+    "condition": "any",
+    "action": "DOB corrections on School Leaving Certificates are legally sensitive. Contact the issuing school and relevant state board. A court-certified birth certificate or court order is typically required. Additional documentation may be required depending on the issuing authority.",
+    "requiredDocuments": [
+      "Original Birth Certificate",
+      "Hospital records (if birth certificate is unavailable)",
+      "Affidavit",
+      "Court order (for substantive DOB corrections)"
+    ],
+    "severity": "high",
+    "humanReview": true,
+    "sourceUrl": "https://mahahsscboard.in/",
+    "sourceTitle": "Maharashtra State Board — DOB Correction Procedure",
+    "version": "2024-01",
+    "active": true
+  },
+  {
+    "ruleId": "SCHOOL-NAME-002",
+    "authority": "School / State Board of Education",
+    "documentType": "marksheet",
+    "field": "full_name",
+    "trigger": "Name mismatch on Board Marksheet",
+    "condition": "outliers_found",
+    "action": "Contact the relevant State Board of Secondary/Higher Secondary Education for a marksheet name correction. The process typically requires an affidavit, gazette notification, and supporting identity documents. Processing times vary by board.",
+    "requiredDocuments": [
+      "Aadhaar Card / Passport (correct name)",
+      "Original Birth Certificate",
+      "Affidavit from First Class Magistrate",
+      "Gazette notification"
+    ],
+    "severity": "medium",
+    "humanReview": true,
+    "sourceUrl": "https://mahahsscboard.in/",
+    "sourceTitle": "Maharashtra State Board — Marksheet Correction Procedure",
+    "version": "2024-01",
+    "active": true
+  },
+  {
+    "ruleId": "HUMAN-REVIEW-001",
+    "authority": "Internal",
+    "documentType": "any",
+    "field": "any",
+    "trigger": "No consensus reached — tied or insufficient evidence",
+    "condition": "no_consensus",
+    "action": "Verify original records with the issuing authority for each conflicting document. Do not rely on any single document or this system's analysis as legal proof. Consult the relevant issuing authority directly.",
+    "requiredDocuments": [],
+    "severity": "high",
+    "humanReview": true,
+    "sourceUrl": "https://digitalindia.gov.in/",
+    "sourceTitle": "Advisory — Manual Verification Required",
+    "version": "2024-01",
+    "active": true
+  },
+  {
+    "ruleId": "HUMAN-REVIEW-002",
+    "authority": "Internal",
+    "documentType": "any",
+    "field": "dob",
+    "trigger": "Year-only DOB (declared/approximate) vs full DOB — incomplete date conflict",
+    "condition": "incomplete_date_conflict",
+    "action": "Verify the exact date of birth with the original issuing authority. UIDAI recognises 'declared/approximate DOB' when valid proof was unavailable at enrolment. Obtain original birth or hospital records before seeking any correction.",
+    "requiredDocuments": [
+      "Original Birth Certificate or hospital birth record",
+      "Aadhaar Seva Kendra appointment (for UIDAI declared DOB correction)"
+    ],
+    "severity": "high",
+    "humanReview": true,
+    "sourceUrl": "https://uidai.gov.in/en/my-aadhaar/update-aadhaar.html",
+    "sourceTitle": "UIDAI — Declared/Approximate DOB Guidance",
+    "version": "2021-10",
+    "active": true
+  }
+]
