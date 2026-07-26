@@ -6,7 +6,6 @@ import { authenticate, AuthRequest } from '../middleware/auth';
 import { DocumentStore, AnalysisStore } from '../models/store';
 import { normalizeField } from '../services/normalizationService';
 import { runConsensusEngine } from '../services/consensusService';
-import { FIELD_WEIGHTS } from '../services/consensusService';
 import { generateGuidance } from '../services/guidanceService';
 import { generateChecklist } from '../services/checklistService';
 import { AuditService } from '../services/auditService';
@@ -111,29 +110,13 @@ router.post('/load', authenticate, async (req: AuthRequest, res: Response): Prom
     }
 
     // 4. Run Consensus Engine
-    const fieldResults = runConsensusEngine(createdDocs);
+    const engineData = runConsensusEngine(createdDocs);
+    const { fieldResults, summary } = engineData;
 
     // 5. Generate Guidance
     const guidance = await generateGuidance(fieldResults);
 
-    // 6. Compute Summary
-    const summary = {
-      totalFieldsChecked: fieldResults.length,
-      consensusCount: fieldResults.filter(r => r.status === 'consistent').length,
-      outlierCount: fieldResults.filter(r => r.status === 'outlier_detected' || r.status === 'possible_variant').length,
-      noConsensusCount: fieldResults.filter(r => r.status === 'conflicting_evidence').length,
-      incompleteDateCount: fieldResults.filter(r => r.status === 'possible_variant' && r.scenario === 'year_only_same_year').length,
-    };
-
-    // 7. Compute health score
-    let totalW = 0, earnedW = 0;
-    for (const r of fieldResults) {
-      const w = FIELD_WEIGHTS[r.fieldKey] ?? 5;
-      totalW += w;
-    }
-    const healthScore = totalW > 0 ? Math.round((earnedW / totalW) * 100) : 0;
-
-    // 8. Generate checklist
+    // 6. Generate checklist
     const uploadedDocTypes = createdDocs.map(d => d.docType);
     const checklist = generateChecklist(uploadedDocTypes);
 
