@@ -45,7 +45,6 @@ export default function GoogleMapView({
   selectedCentreId,
   onSelectCentre,
   userLocation,
-  activeCity,
 }: GoogleMapViewProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapInstance, setMapInstance] = useState<any>(null);
@@ -228,4 +227,10 @@ export default function GoogleMapView({
     </div>
   );
 }
+
+
+
+
+
+
 

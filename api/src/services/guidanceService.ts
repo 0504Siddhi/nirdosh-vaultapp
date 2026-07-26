@@ -1,8 +1,41 @@
 import ruleData from '../data/correction-rules.json';
 import { IFieldResult, IGuidanceItem } from '../models/store';
-import type { CorrectionRule, GuideStatus } from '../types/nirdosh-vault';
+import type { CorrectionRule, GuideStatus, OfficialSource } from '../types/nirdosh-vault';
 
-const rules = ruleData.rules as CorrectionRule[];
+function toCorrectionRule(raw: any): CorrectionRule {
+  const officialSources: OfficialSource[] = raw.official_source
+    ? [{
+        authority: raw.authority,
+        title: raw.official_source,
+        url: raw.official_source,
+        exact_support: raw.exact_support ?? '',
+      }]
+    : [];
+  return {
+    rule_id: raw.rule_id,
+    document_type: raw.document_type,
+    field_key: raw.field_key,
+    scenario: raw.scenario,
+    priority: raw.priority,
+    trigger_source: raw.trigger_source,
+    requires_user_input: raw.requires_user_input,
+    title: raw.recommended_action,
+    citizen_message: raw.explanation,
+    recommended_steps: raw.exact_steps ?? [],
+    supporting_document_categories: raw.supporting_document_categories ?? [],
+    authority: raw.authority,
+    channel: raw.channel ?? [],
+    jurisdiction: raw.jurisdiction,
+    rule_status: raw.rule_status,
+    human_review_required: raw.human_review_required,
+    official_sources: officialSources,
+    source_checked_date: raw.source_checked_date,
+    expires_for_review_on: raw.expires_for_review_on ?? null,
+    disclaimer: raw.disclaimer,
+  };
+}
+
+const rules = ruleData.rules.map(toCorrectionRule);
 const active = (rule: CorrectionRule) => rule.rule_status !== 'unverified' && (!rule.expires_for_review_on || new Date(rule.expires_for_review_on) >= new Date());
 
 export function buildCorrectionKit(analysisId: string, result: IFieldResult, documentType?: string) {
@@ -45,4 +78,5 @@ export async function generateGuidance(fieldResults: IFieldResult[]): Promise<IG
     disclaimer: 'Nirdosh Vault does not determine legal truth or choose a correction target automatically.' 
   }));
 }
+
 

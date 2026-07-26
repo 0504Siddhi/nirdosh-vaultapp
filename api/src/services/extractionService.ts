@@ -241,7 +241,7 @@ class PaddleOCRProcess {
     if (this.isReady()) return Promise.resolve();
     if (this.warmupPromise) return this.warmupPromise;
 
-    this.warmupPromise = new Promise((resolve) => {
+    this.warmupPromise = new Promise<void>((resolve) => {
       const scriptPath = path.join(__dirname, 'paddle_server.py');
 
       if (!fs.existsSync(scriptPath)) {

@@ -111,23 +111,17 @@ router.post('/load', authenticate, async (req: AuthRequest, res: Response): Prom
     }
 
     // 4. Run Consensus Engine
-    const fieldResults = runConsensusEngine(createdDocs);
+    const engineData = runConsensusEngine(createdDocs);
 
     // 5. Generate Guidance
-    const guidance = await generateGuidance(fieldResults);
+    const guidance = await generateGuidance(engineData.fieldResults);
 
     // 6. Compute Summary
-    const summary = {
-      totalFieldsChecked: fieldResults.length,
-      consensusCount: fieldResults.filter(r => r.status === 'consistent').length,
-      outlierCount: fieldResults.filter(r => r.status === 'outlier_detected' || r.status === 'possible_variant').length,
-      noConsensusCount: fieldResults.filter(r => r.status === 'conflicting_evidence').length,
-      incompleteDateCount: fieldResults.filter(r => r.status === 'possible_variant' && r.scenario === 'year_only_same_year').length,
-    };
+    const summary = engineData.summary;
 
     // 7. Compute health score
     let totalW = 0, earnedW = 0;
-    for (const r of fieldResults) {
+    for (const r of engineData.fieldResults) {
       const w = FIELD_WEIGHTS[r.fieldKey] ?? 5;
       totalW += w;
     }
@@ -135,15 +129,16 @@ router.post('/load', authenticate, async (req: AuthRequest, res: Response): Prom
 
     // 8. Generate checklist
     const uploadedDocTypes = createdDocs.map(d => d.docType);
-    const checklist = generateChecklist(uploadedDocTypes);
+    const checklist = generateChecklist(uploadedDocTypes, engineData.documentSpecificFields);
 
     // 9. Store Analysis
     const analysis = AnalysisStore.create({
       userId: req.user.id,
       documentIds: createdDocs.map(d => d._id),
       status: 'complete',
-      fieldResults,
-      summary,
+      fieldResults: engineData.fieldResults,
+      summary: engineData.summary,
+      documentSpecificFields: engineData.documentSpecificFields,
       guidance,
       checklist,
     });
@@ -166,3 +161,10 @@ router.post('/load', authenticate, async (req: AuthRequest, res: Response): Prom
 });
 
 export default router;
+
+
+
+
+
+
+

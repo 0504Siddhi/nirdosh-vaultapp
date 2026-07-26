@@ -109,8 +109,8 @@ async function runExtractionTests() {
   });
 
   assert.equal(rawBatchDoc.documents.length, 2);
-  assert.equal(rawBatchDoc.documents[0].docType, 'aadhaar');
-  assert.equal(rawBatchDoc.documents[1].docType, 'pan');
+  assert.equal((rawBatchDoc.documents[0] as any).docType, 'aadhaar');
+  assert.equal((rawBatchDoc.documents[1] as any).docType, 'pan');
 
   // 4. Minimum viable field quality check
   const invalidAadhaar = ExtractedDocSchema.parse({
@@ -218,3 +218,4 @@ runExtractionTests().catch((err) => {
   console.error('❌ Extraction Unit Test Failed:', err);
   process.exit(1);
 });
+
