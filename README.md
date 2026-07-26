@@ -6,6 +6,7 @@
 
 ## 🔗 Quick Links
 
+- video link = https://drive.google.com/file/d/1ZjJ3eOUXRpCELx1HveHuKusEWIsQ7XNV/view?usp=sharing
 - 🌐 **Live Demo:** https://nirdosh-vault-ui-mauve.vercel.app/
 - 💻 **GitHub Repository:** https://github.com/purvasatav/nirdosh-vaultapp
 
