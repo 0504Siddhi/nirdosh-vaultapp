@@ -5,6 +5,7 @@ services:
     dockerfilePath: ./api/Dockerfile
     dockerContext: ./api
     healthCheckPath: /health
+    plan: free
     envVars:
       - key: NODE_ENV
         value: production
@@ -18,3 +19,4 @@ services:
         value: "3"
       - key: GEMINI_TIMEOUT_MS
         value: "45000"
+
