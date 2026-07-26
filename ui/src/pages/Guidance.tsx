@@ -1,184 +1,470 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+﻿import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import {
+  ArrowLeft,
+  MapPin,
+  CheckCircle,
+  Clock,
+  IndianRupee,
+  FileText,
+  AlertTriangle,
+} from 'lucide-react';
 import api from '../api/client';
-import { ArrowLeft, MapPin, CheckCircle, Clock, IndianRupee, FileText } from 'lucide-react';
 
 export default function Guidance() {
-  const { analysisId } = useParams();
+  const { id } = useParams<{ id: string }>();
+
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get(`/analysis/${analysisId}`)
-      .then(res => setAnalysis(res.data.analysis))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [analysisId]);
-
-  if (loading) {
-    return <div className="pt-32 text-center text-slate-500">Loading official correction guidelines...</div>;
-  }
-
-  // Research-backed rule database for official identity documents (UIDAI & PAN)
-  const ruleDatabase: Record<string, { authority: string; form: string; fee: string; timeline: string; docs: string[]; steps: string[] }> = {
-    'Date Of Birth': {
-      authority: 'UIDAI (Aadhaar Regulation 19) / Registrar of Births & Deaths',
-      form: 'Aadhaar Enrolment / Update Form',
-      fee: '₹50 (Inclusive of GST)',
-      timeline: '7 to 90 working days',
-      docs: ['Original Birth Certificate (BC)', 'Passport / School Leaving Certificate (SLC)', 'PAN Card (if matching target DOB)'],
-      steps: [
-        'Visit your nearest authorized Aadhaar Seva Kendra (ASK) or Registrar office.',
-        'Fill out the Aadhaar Correction/Update Form specifying the target Date of Birth.',
-        'Submit original self-attested copy of your Birth Certificate or valid Proof of Birth (PoB).',
-        'Complete biometric authentication and collect the Update Request Number (URN) slip.'
-      ]
-    },
-    'Address': {
-      authority: 'Income Tax Department (Protean/UTIITSL) & UIDAI',
-      form: 'PAN Change Request Form / Aadhaar Address Update',
-      fee: '₹110 (Domestic dispatch) / ₹50 (Aadhaar update)',
-      timeline: '15 to 20 working days',
-      docs: ['Utility Bill (Electricity/Water not older than 3 months)', 'Voter ID or Passport', 'Bank Statement with current address'],
-      steps: [
-        'Log into the Protean (NSDL) or UTIITSL portal for PAN address synchronization.',
-        'Submit supporting address proof matching your primary verified document.',
-        'Alternatively, update Aadhaar address online via SSUP portal using valid Address Proof.',
-        'Track status using the acknowledgment number provided upon submission.'
-      ]
-    },
-    'Full Name': {
-      authority: 'UIDAI & Department of Revenue',
-      form: 'Joint Declaration Form / Deed Poll (Gazette Notification if major change)',
-      fee: '₹50 - ₹100 depending on authority',
-      timeline: '30 to 60 working days',
-      docs: ['Gazette Notification (mandatory for spelling corrections/surname changes)', 'PAN Card', 'Educational Marksheet'],
-      steps: [
-        'Publish name change in State/Central Official Gazette if spelling difference is substantial.',
-        'Submit Aadhaar correction request attaching Gazette certificate and supporting school records.',
-        'Synchronize PAN details once Aadhaar is successfully updated.'
-      ]
+    if (!id) {
+      setError('Analysis ID is missing.');
+      setLoading(false);
+      return;
     }
+
+    api
+      .get(`/analysis/${id}`)
+      .then((response) => {
+        setAnalysis(response.data);
+      })
+      .catch((err) => {
+        console.error('Guidance loading failed:', err);
+        setError(
+          err?.response?.data?.error ||
+            'Unable to load correction guidance.',
+        );
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const conflictStatuses = [
+    'mismatch',
+    'outlier',
+    'outlier_detected',
+    'possible_variant',
+    'conflict',
+    'conflicting_evidence',
+    'no_consensus',
+    'incomplete_date_conflict',
+    'extraction_uncertain',
+  ];
+
+  const conflicts = Array.isArray(analysis?.fieldResults)
+    ? analysis.fieldResults.filter((field: any) => {
+        return (
+          conflictStatuses.includes(field.status) ||
+          (Array.isArray(field.outliers) &&
+            field.outliers.length > 0) ||
+          (Array.isArray(field.groups) &&
+            field.groups.length > 1)
+        );
+      })
+    : [];
+
+  const ruleDatabase: Record<string, any> = {
+    date_of_birth: {
+      authority:
+        'UIDAI, Registrar of Births and Deaths, or relevant issuing authority',
+      form:
+        'Date of Birth Correction or Document Update Application',
+      fee: 'As prescribed by the authority',
+      timeline: 'Usually 7-90 working days',
+      docs: [
+        'Birth Certificate or accepted proof of date of birth',
+        'Original document containing the mismatch',
+        'Identity proof',
+        'Correction application',
+      ],
+      steps: [
+        'Compare the detected values and identify the document containing the likely incorrect date.',
+        'Contact the authority that originally issued that document.',
+        'Request its current date-of-birth correction procedure.',
+        'Submit the correction application with accepted supporting documents.',
+        'Keep the acknowledgement receipt and track the request.',
+        'Verify the corrected document after issuance.',
+      ],
+    },
+
+    full_name: {
+      authority:
+        'Authority that issued the document containing the incorrect name',
+      form: 'Name Correction Application',
+      fee: 'As prescribed by the authority',
+      timeline: 'Usually 15-60 working days',
+      docs: [
+        'Document containing the correct name',
+        'Document containing the mismatch',
+        'Identity proof',
+        'Declaration, affidavit, or Gazette record only when required',
+      ],
+      steps: [
+        'Determine whether the difference is a spelling variation or a legal name change.',
+        'Identify the document containing the likely incorrect value.',
+        'Contact the issuing authority.',
+        'Submit its official name-correction application.',
+        'Provide an affidavit or Gazette record only when the authority requires it.',
+        'Verify the corrected document before updating dependent records.',
+      ],
+    },
+
+    address: {
+      authority:
+        'UIDAI, Income Tax Department, or relevant issuing authority',
+      form: 'Address Update Application',
+      fee: 'As prescribed by the authority',
+      timeline: 'Usually 7-30 working days',
+      docs: [
+        'Accepted proof of address',
+        'Original document containing the incorrect address',
+        'Identity proof',
+        'Correction application',
+      ],
+      steps: [
+        'Confirm the currently valid address using accepted proof.',
+        'Identify the document containing the outdated or incorrect address.',
+        'Contact the authority that issued that document.',
+        'Submit the address-update application with valid proof.',
+        'Keep the acknowledgement number.',
+        'Verify the corrected address after processing.',
+      ],
+    },
   };
 
-  // Smart fallback rule for custom or unrecognized documents (e.g., School Leaving Certificate, Marksheets)
-  const getRuleForConflict = (conflict: any) => {
-    if (ruleDatabase[conflict.field]) {
-      return ruleDatabase[conflict.field];
+  const normalizeFieldKey = (value: string) =>
+    String(value || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '_')
+      .replace(/^_+|_+$/g, '');
+
+  const getRule = (conflict: any) => {
+    const key = normalizeFieldKey(
+      conflict.fieldKey || conflict.field || conflict.label,
+    );
+
+    if (key.includes('date_of_birth') || key === 'dob') {
+      return ruleDatabase.date_of_birth;
     }
+
+    if (
+      key.includes('full_name') ||
+      key.includes('applicant_name') ||
+      key === 'name'
+    ) {
+      return ruleDatabase.full_name;
+    }
+
+    if (key.includes('address')) {
+      return ruleDatabase.address;
+    }
+
     return {
-      authority: 'Issuing School Authority / Educational Board / Registrar',
-      form: 'Institution Application / Correction Affidavit',
-      fee: 'Nominal institutional processing fee',
-      timeline: '7 to 15 working days',
-      docs: ['Original School Leaving Certificate / Marksheet', 'Principal / Headmaster Application Letter', 'Identity Proof (Aadhaar/PAN)'],
+      authority:
+        'Authority that originally issued the document containing the incorrect value',
+      form: 'Official Document Correction Application',
+      fee: 'As prescribed by the issuing authority',
+      timeline: 'Usually 7-30 working days',
+      docs: [
+        'Original document containing the mismatch',
+        'Strong supporting document containing the correct value',
+        'Identity proof',
+        'Written correction application',
+        'Affidavit only if officially required',
+      ],
       steps: [
-        'Visit the issuing school or educational board office where the certificate was originally generated.',
-        'Submit a formal written application addressed to the Principal or Registrar requesting the correction.',
-        'Attach supporting official school admission registers or birth records verifying the correct details.',
-        'Collect the revised and re-stamped certificate upon institutional approval.'
-      ]
+        'Review the conflicting values.',
+        'Identify the strongest supporting record.',
+        'Determine which document likely contains the incorrect value.',
+        'Contact the authority that issued that document.',
+        'Submit the official correction application.',
+        'Keep the acknowledgement and verify the corrected document.',
+      ],
     };
   };
 
-  const conflicts = analysis?.fieldResults?.filter((f: any) => f.needsManualVerification === true) || [];
+  const getEvidence = (conflict: any) => {
+    const evidence: Array<{
+      document: string;
+      value: string;
+      type: 'supporting' | 'outlier' | 'other';
+    }> = [];
+
+    if (Array.isArray(conflict.supportingDocs)) {
+      conflict.supportingDocs.forEach((document: any) => {
+        evidence.push({
+          document:
+            document.docTitle ||
+            document.documentTitle ||
+            document.docType ||
+            'Supporting document',
+          value: String(
+            document.value ??
+              document.rawValue ??
+              document.normalizedValue ??
+              'Not available',
+          ),
+          type: 'supporting',
+        });
+      });
+    }
+
+    if (Array.isArray(conflict.outliers)) {
+      conflict.outliers.forEach((document: any) => {
+        evidence.push({
+          document:
+            document.docTitle ||
+            document.documentTitle ||
+            document.docType ||
+            'Differing document',
+          value: String(
+            document.value ??
+              document.rawValue ??
+              document.normalizedValue ??
+              'Not available',
+          ),
+          type: 'outlier',
+        });
+      });
+    }
+
+    if (Array.isArray(conflict.groups)) {
+      conflict.groups.forEach((group: any) => {
+        const documents = group.docs || group.documents || [];
+
+        documents.forEach((document: any) => {
+          evidence.push({
+            document:
+              document.docTitle ||
+              document.documentTitle ||
+              document.docType ||
+              'Document',
+            value: String(group.value ?? 'Not available'),
+            type: 'other',
+          });
+        });
+      });
+    }
+
+    if (
+      evidence.length === 0 &&
+      conflict.consensusValue !== undefined
+    ) {
+      evidence.push({
+        document: 'Consensus value',
+        value: String(conflict.consensusValue),
+        type: 'supporting',
+      });
+    }
+
+    return evidence;
+  };
+
+  if (loading) {
+    return (
+      <div className="pt-32 text-center text-slate-500">
+        Loading official correction guidelines...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="pt-28 px-6 max-w-3xl mx-auto">
+        <div className="card p-8 text-center">
+          <AlertTriangle
+            className="mx-auto text-red-500 mb-3"
+            size={40}
+          />
+
+          <h2 className="text-xl font-bold mb-2">
+            Guidance Could Not Be Loaded
+          </h2>
+
+          <p className="text-sm text-slate-500">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-24 px-6 max-w-4xl mx-auto min-h-screen relative z-10 pb-20">
-      {/* Clean Breadcrumb Header */}
       <div className="flex flex-wrap items-center gap-2 mb-6 text-sm">
-        <Link to={`/report/${analysisId}`} className="text-slate-500 hover:text-saffron-600 flex items-center gap-1 font-medium">
-          <ArrowLeft size={16} /> Back to Report
+        <Link
+          to={`/report/${id}`}
+          className="text-slate-500 hover:text-saffron-600 flex items-center gap-1 font-medium"
+        >
+          <ArrowLeft size={16} />
+          Back to Report
         </Link>
+
         <span className="text-slate-300">/</span>
+
         <span className="text-saffron-600 font-bold uppercase tracking-wider text-xs bg-saffron-50 px-2.5 py-1 rounded-md border border-saffron-200">
-          Correction Kit & SOPs
+          Correction Kit &amp; SOPs
         </span>
       </div>
 
       <div className="mb-8">
-        <h2 className="text-3xl font-bold mb-2">Official Correction Guidance Kit</h2>
+        <h2 className="text-3xl font-bold mb-2">
+          Official Correction Guidance Kit
+        </h2>
+
         <p className="text-slate-500 text-sm">
-          Actionable steps based on verified regulations from UIDAI, Income Tax Department, and issuing authorities to resolve detected document conflicts.
+          Detected conflicts: {conflicts.length}
         </p>
       </div>
 
       {conflicts.length === 0 ? (
         <div className="card p-8 text-center bg-white border-slate-200">
-          <CheckCircle className="mx-auto text-green-500 mb-3" size={40} />
-          <h3 className="font-bold text-lg mb-1">No Conflicts Detected</h3>
-          <p className="text-xs text-slate-500">Your documents are fully consistent. No correction steps are required.</p>
+          <CheckCircle
+            className="mx-auto text-green-500 mb-3"
+            size={40}
+          />
+
+          <h3 className="font-bold text-lg mb-1">
+            No Conflicts Detected
+          </h3>
         </div>
       ) : (
         <div className="space-y-6">
-          {conflicts.map((conflict: any, idx: number) => {
-            const rule = getRuleForConflict(conflict);
+          {conflicts.map((conflict: any, index: number) => {
+            const rule = getRule(conflict);
+            const evidence = getEvidence(conflict);
+            const label =
+              conflict.label ||
+              conflict.field ||
+              conflict.fieldKey ||
+              'Document Field';
 
             return (
-              <div key={idx} className="card p-6 bg-white border-slate-200 shadow-sm">
-                <div className="flex items-start justify-between gap-4 mb-4 border-b border-slate-100 pb-4">
+              <div
+                key={`${conflict.fieldKey || index}-${index}`}
+                className="card p-6 bg-white border-slate-200 shadow-sm"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4 border-b border-slate-100 pb-4">
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
                       Conflict Resolution Required
                     </span>
-                    <h3 className="text-xl font-bold text-navy-950 mt-1">{conflict.field} Correction</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">Governing Body: <strong>{rule.authority}</strong></p>
+
+                    <h3 className="text-xl font-bold text-navy-950 mt-2">
+                      {label} Correction
+                    </h3>
+
+                    <p className="text-xs text-slate-500 mt-1">
+                      Status: <strong>{conflict.status}</strong>
+                    </p>
+
+                    <p className="text-xs text-slate-500 mt-1">
+                      Governing body:{' '}
+                      <strong>{rule.authority}</strong>
+                    </p>
                   </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-xs font-semibold text-slate-700 flex items-center gap-1 justify-end">
-                      <Clock size={14} className="text-slate-400" /> {rule.timeline}
+
+                  <div className="text-left sm:text-right shrink-0">
+                    <div className="text-xs font-semibold text-slate-700 flex items-center gap-1 sm:justify-end">
+                      <Clock size={14} />
+                      {rule.timeline}
                     </div>
-                    <div className="text-xs font-bold text-saffron-600 mt-1 flex items-center gap-0.5 justify-end">
-                      <IndianRupee size={12} /> {rule.fee}
+
+                    <div className="text-xs font-bold text-saffron-600 mt-1 flex items-center gap-1 sm:justify-end">
+                      <IndianRupee size={12} />
+                      {rule.fee}
                     </div>
                   </div>
                 </div>
 
-                {/* Evidence breakdown */}
-                <div className="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs space-y-2">
-                  <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px] mb-1">Conflicting Evidence Found:</div>
-                  {Object.entries(conflict.values || {}).map(([docTitle, val]: [string, any], i: number) => (
-                    <div key={i} className="flex justify-between items-center py-1 border-b border-slate-200/40 last:border-0">
-                      <span className="text-slate-600 font-medium">{docTitle}:</span>
-                      <span className="font-bold text-navy-950 bg-white px-2 py-0.5 rounded border border-slate-200">{String(val)}</span>
-                    </div>
-                  ))}
-                </div>
+                <div className="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200 text-xs">
+                  <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px] mb-3">
+                    Conflicting Evidence Found
+                  </div>
 
-                {/* Step-by-Step Action Pathway */}
-                <div className="mb-6">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Official Standard Operating Procedure (SOP)</h4>
-                  <div className="space-y-2.5">
-                    {rule.steps.map((stepText: string, sIdx: number) => (
-                      <div key={sIdx} className="flex items-start gap-3 text-xs text-slate-700">
-                        <span className="w-5 h-5 rounded-full bg-saffron-500/10 text-saffron-600 font-bold flex items-center justify-center shrink-0 text-[10px] mt-0.5">
-                          {sIdx + 1}
+                  {evidence.length > 0 ? (
+                    evidence.map((item, evidenceIndex) => (
+                      <div
+                        key={evidenceIndex}
+                        className="flex flex-col sm:flex-row sm:justify-between gap-2 py-2 border-b border-slate-200 last:border-0"
+                      >
+                        <span className="text-slate-600 font-medium">
+                          {item.document}
                         </span>
-                        <p className="leading-relaxed">{stepText}</p>
+
+                        <span
+                          className={`font-bold px-2 py-1 rounded border ${
+                            item.type === 'outlier'
+                              ? 'bg-red-50 text-red-700 border-red-200'
+                              : 'bg-white text-navy-950 border-slate-200'
+                          }`}
+                        >
+                          {item.value}
+                        </span>
                       </div>
-                    ))}
+                    ))
+                  ) : (
+                    <p className="text-slate-500">
+                      Conflict detected, but detailed document values
+                      were not included.
+                    </p>
+                  )}
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                    Recommended Correction Procedure
+                  </h4>
+
+                  <div className="space-y-3">
+                    {rule.steps.map(
+                      (step: string, stepIndex: number) => (
+                        <div
+                          key={stepIndex}
+                          className="flex items-start gap-3 text-xs text-slate-700"
+                        >
+                          <span className="w-5 h-5 rounded-full bg-saffron-500/10 text-saffron-600 font-bold flex items-center justify-center shrink-0">
+                            {stepIndex + 1}
+                          </span>
+
+                          <p>{step}</p>
+                        </div>
+                      ),
+                    )}
                   </div>
                 </div>
 
-                {/* Required Documents */}
                 <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100 mb-6 text-xs">
-                  <div className="font-bold text-blue-900 mb-2 flex items-center gap-1.5">
-                    <FileText size={14} className="text-blue-600" /> Required Supporting Documents
+                  <div className="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                    <FileText size={14} />
+                    Supporting Documents That May Be Required
                   </div>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-blue-950">
-                    {rule.docs.map((doc: string, dIdx: number) => (
-                      <li key={dIdx} className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> {doc}
-                      </li>
-                    ))}
+
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {rule.docs.map(
+                      (document: string, documentIndex: number) => (
+                        <li
+                          key={documentIndex}
+                          className="flex items-start gap-2"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
+                          {document}
+                        </li>
+                      ),
+                    )}
                   </ul>
                 </div>
 
-                {/* Footer action to find nearby help */}
-                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                  <span className="text-[11px] text-slate-400">Form Reference: <strong>{rule.form}</strong></span>
-                  <Link to={`/centres/${analysisId}`} className="btn btn-secondary text-xs py-2 px-4 flex items-center gap-1.5">
-                    <MapPin size={14} /> Find Nearest Enrolment Centre →
+                <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4 border-t border-slate-100">
+                  <span className="text-[11px] text-slate-400">
+                    Form reference: <strong>{rule.form}</strong>
+                  </span>
+
+                  <Link
+                    to={`/centres/${id}`}
+                    className="btn btn-secondary text-xs py-2 px-4 flex items-center justify-center gap-2"
+                  >
+                    <MapPin size={14} />
+                    Find Nearest Assistance Centre
                   </Link>
                 </div>
               </div>
@@ -189,4 +475,3 @@ export default function Guidance() {
     </div>
   );
 }
-
